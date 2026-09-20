@@ -120,8 +120,22 @@ export const BRANDS: Brand[] = [
     officialUrl: 'https://www.iherb.com/',
     admitadProgram: 'iHerb.com INT（0.80–4%）',
     affiliateUrl: '',
+    // iHerb 不發公開優惠碼：折扣直接掛在商品上、結帳自動套用，官方 /deals 頁沒有任何碼可輸入
     codes: [],
-    campaigns: [],
+    campaigns: [
+      {
+        title: '中秋佳節好禮特惠 76 折酬賓',
+        detail: '折扣於商品頁直接呈現、結帳自動套用，不需要輸入優惠碼。',
+        period: '以官方頁面公告為準（2026-09-21 核對時進行中）',
+        source: 'https://tw.iherb.com/deals',
+      },
+      {
+        title: '購物滿 NT$790 免運費',
+        detail: '台灣地區常態門檻，不需要輸入優惠碼。',
+        period: '常態',
+        source: 'https://tw.iherb.com/deals',
+      },
+    ],
   },
   {
     slug: 'trip-com',
