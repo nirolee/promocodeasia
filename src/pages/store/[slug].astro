@@ -1,0 +1,63 @@
+---
+import Base from '../../layouts/Base.astro';
+import { BRANDS } from '../../data/brands';
+export function getStaticPaths() {
+  return BRANDS.map((b) => ({ params: { slug: b.slug }, props: { brand: b } }));
+}
+const { brand } = Astro.props;
+const latest = brand.codes.map((c) => c.verifiedAt).sort().at(-1);
+---
+<Base
+  title={`${brand.name} 優惠碼（${latest ?? '持續追蹤中'}核對）｜PromoCodeAsia`}
+  description={`${brand.name}優惠碼整理：${brand.codes.length > 0 ? `${brand.codes.length} 組已核對的碼` : '目前沒有已核對的公開碼'}，每組標示核對日期與官方出處。`}>
+  <h1>{brand.name} 優惠碼</h1>
+  <p class="sub">{brand.tagline}{latest ? `・最後核對 ${latest}` : ''}</p>
+
+  <h2>優惠碼</h2>
+  {brand.codes.length === 0 ? (
+    <div class="empty">
+      <strong>目前沒有已核對的公開優惠碼。</strong>
+      <p style="margin:8px 0 0">
+        我們寧可這樣寫，也不放沒驗證過的碼。{brand.name} 的折扣目前多半綁在活動或會員身分上，
+        建議直接看 <a href={brand.officialUrl} rel="nofollow noopener" target="_blank">官方頁面</a>。
+        有可用的碼我們會補上並標註核對日期。
+      </p>
+    </div>
+  ) : (
+    brand.codes.map((c) => (
+      <div class="card">
+        <div class="codebox">
+          <code class="c">{c.code}</code>
+          <span class="benefit">{c.benefit}</span>
+        </div>
+        <div class="meta">適用條件：{c.restriction}</div>
+        <div class="meta">
+          <span class="verified">✓ {c.verifiedAt} 核對</span>
+          ・出處：<a href={c.source} rel="nofollow noopener" target="_blank">品牌官方頁</a>
+          {c.expiresAt ? `・官方標示失效日 ${c.expiresAt}` : ''}
+        </div>
+      </div>
+    ))
+  )}
+
+  {brand.campaigns.length > 0 && (
+    <>
+      <h2>進行中的活動（不需要輸入碼）</h2>
+      {brand.campaigns.map((c) => (
+        <div class="card">
+          <strong>{c.title}</strong>
+          <div class="meta">{c.period}</div>
+          <p style="margin:8px 0 0">{c.detail}</p>
+          <div class="meta">出處：<a href={c.source} rel="nofollow noopener" target="_blank">品牌官方頁</a></div>
+        </div>
+      ))}
+    </>
+  )}
+
+  <h2>怎麼用</h2>
+  <ul>
+    <li>先確認你的付款方式符合「適用條件」——台灣的優惠碼多半綁定特定發卡銀行。</li>
+    <li>多數銀行碼需要<strong>先點擊品牌活動頁</strong>才會生效，直接在結帳頁輸入可能無效。</li>
+    <li>每個帳號通常每月限用一次，數量有限、以結帳順序為準。</li>
+  </ul>
+</Base>
