@@ -7,7 +7,10 @@
 import { readFileSync } from 'node:fs';
 
 const src = readFileSync(new URL('../src/data/brands.ts', import.meta.url), 'utf8');
-const today = new Date().toISOString().slice(0, 10);
+// 用 Asia/Shanghai 的「今天」，不是 UTC 也不是机器本地时区。
+// 开发机时区是 JST（比北京快 1 小时），toISOString() 取 UTC 又会比北京慢 8 小时——
+// 两头都会把当天写的 verifiedAt 误判成未来日期（2026-09-21 实测被拦）。
+const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Shanghai' }).format(new Date());
 const errs = [];
 
 // 逐个 code 对象做浅解析（数据是手写字面量，不引入 TS 运行时）
