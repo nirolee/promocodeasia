@@ -20,6 +20,15 @@ const url = canonical ?? new URL(Astro.url.pathname, 'https://promocodeasia.com'
   <meta name="twitter:card" content="summary" />
   {/* Admitad(Mitgo) 流量源归属验证 —— ad space「PromoCodeAsia」，验证通过后可删 */}
   <meta name="mitgo-verification" content="33ce24bc-5535-45e0-b513-dd54919d4863" />
+
+  {/* GA4 —— 衡量 ID G-RYKYJQL028（媒体资源 555087477 / 数据流 15812390607） */}
+  <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-RYKYJQL028"></script>
+  <script is:inline>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-RYKYJQL028');
+  </script>
 </head>
 <body>
   <header class="topbar">
