@@ -1,4 +1,6 @@
 ---
+import '../styles/global.css';
+
 export interface Props { title: string; description: string; canonical?: string }
 const { title, description, canonical } = Astro.props;
 const url = canonical ?? new URL(Astro.url.pathname, 'https://promocodeasia.com').toString();
@@ -11,38 +13,57 @@ const url = canonical ?? new URL(Astro.url.pathname, 'https://promocodeasia.com'
   <title>{title}</title>
   <meta name="description" content={description} />
   <link rel="canonical" href={url} />
+  <meta property="og:type" content="website" />
   <meta property="og:title" content={title} />
   <meta property="og:description" content={description} />
-  <style>
-    :root{--bg:#fbfaf8;--fg:#1d1b19;--muted:#6b6560;--line:#e4dfd7;--card:#fff;--accent:#1a6b4a;--code:#f2efe9}
-    @media (prefers-color-scheme:dark){:root{--bg:#151417;--fg:#e9e5df;--muted:#9c958c;--line:#2e2b31;--card:#1e1c21;--accent:#5fc596;--code:#26242a}}
-    *{box-sizing:border-box}
-    body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.8 -apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif}
-    .wrap{max-width:820px;margin:0 auto;padding:40px 16px 80px}
-    a{color:var(--accent)}
-    h1{font-size:26px;line-height:1.35;margin:0 0 6px}
-    h2{font-size:19px;margin:40px 0 12px;padding-bottom:6px;border-bottom:2px solid var(--line)}
-    .sub{color:var(--muted);font-size:14px;margin-bottom:28px}
-    .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin:14px 0}
-    .codebox{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-    code.c{background:var(--code);border:1px dashed var(--line);border-radius:6px;padding:4px 12px;font-size:17px;font-weight:700;letter-spacing:.5px}
-    .benefit{font-weight:600}
-    .meta{font-size:13px;color:var(--muted);margin-top:6px}
-    .verified{color:var(--accent);font-weight:600}
-    .empty{border:1px dashed var(--line);border-radius:10px;padding:18px;color:var(--muted)}
-    nav a{margin-right:14px;font-size:14px}
-    footer{margin-top:56px;padding-top:16px;border-top:1px solid var(--line);font-size:13px;color:var(--muted)}
-    ul{padding-left:20px}
-  </style>
+  <meta property="og:url" content={url} />
+  <meta name="twitter:card" content="summary" />
+  {/* Admitad(Mitgo) 流量源归属验证 —— ad space「PromoCodeAsia」，验证通过后可删 */}
+  <meta name="mitgo-verification" content="33ce24bc-5535-45e0-b513-dd54919d4863" />
 </head>
 <body>
-  <div class="wrap">
-    <nav><a href="/">首頁</a><a href="/about/">關於本站</a></nav>
-    <slot />
-    <footer>
-      <p>本站列出的每一組優惠碼都標示「我們最後一次核對的日期」與出處。沒有核對過的碼不會出現在這裡——寧可顯示「目前沒有公開碼」，也不放過期碼充數。</p>
-      <p>部分連結為合作推廣連結；是否使用不影響你在該品牌的價格。</p>
-    </footer>
-  </div>
+  <header class="topbar">
+    <div class="wrap">
+      <a class="brandmark" href="/">PromoCode<span>Asia</span></a>
+      <nav>
+        <a href="/">品牌</a>
+        <a href="/about/">我們怎麼核對</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="wrap"><slot /></div>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <p>本站每一組優惠碼都標示「最後核對日期」與官方出處。沒核對過的碼不會出現在這裡——寧可寫「目前沒有公開碼」，也不放過期碼充數。</p>
+      <p>部分品牌連結為合作推廣連結；是否使用不影響你在該品牌所付的價格。</p>
+      <p>© 2026 PromoCodeAsia</p>
+    </div>
+  </footer>
+
+  <script>
+    // 复制码：优先用 Clipboard API，不可用时回退到 execCommand（http 或旧浏览器）
+    document.addEventListener('click', (e) => {
+      const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('.copybtn');
+      if (!btn) return;
+      const code = btn.dataset.code || '';
+      const done = () => {
+        const old = btn.textContent;
+        btn.textContent = '已複製';
+        btn.classList.add('done');
+        setTimeout(() => { btn.textContent = old; btn.classList.remove('done'); }, 1600);
+      };
+      if (navigator.clipboard?.writeText) {
+        navigator.clipboard.writeText(code).then(done).catch(() => {});
+      } else {
+        const ta = document.createElement('textarea');
+        ta.value = code; document.body.appendChild(ta); ta.select();
+        try { document.execCommand('copy'); done(); } finally { ta.remove(); }
+      }
+    });
+  </script>
 </body>
 </html>

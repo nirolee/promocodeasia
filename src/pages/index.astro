@@ -1,34 +1,44 @@
 ---
 import Base from '../layouts/Base.astro';
 import { BRANDS } from '../data/brands';
-const withCodes = BRANDS.filter((b) => b.codes.length > 0).length;
+const withCodes = BRANDS.filter((b) => b.codes.length > 0);
+const allDates = BRANDS.flatMap((b) => b.codes.map((c) => c.verifiedAt)).sort();
+const latest = allDates.at(-1);
+const initials = (s: string) => s.replace(/[^A-Za-z]/g, '').slice(0, 2).toUpperCase() || s.slice(0, 1);
 ---
 <Base
-  title="優惠碼查詢｜每一組都標示核對日期與出處"
-  description="Klook、iHerb、Trip.com、KKday 等品牌的優惠碼整理。每組碼標示我們最後核對的日期和官方出處，沒核對過的不放。">
+  title="優惠碼查詢｜每一組都標示核對日期與出處 - PromoCodeAsia"
+  description="Klook、iHerb、Trip.com、KKday 等品牌的優惠碼整理。每組碼標示我們最後核對的日期與官方出處；查不到有效碼時就直說沒有，不放過期碼。">
   <h1>優惠碼，只放我們核對過的</h1>
-  <p class="sub">目前收錄 {BRANDS.length} 個品牌，其中 {withCodes} 個有現行可用的公開碼。</p>
+  <p class="lede">
+    收錄 {BRANDS.length} 個品牌{latest ? `・最後一次核對 ${latest}` : ''}。
+    其中 {withCodes.length} 個目前有可用的公開碼。
+  </p>
 
-  <div class="card">
-    <strong>為什麼要另外做一個站</strong>
-    <p style="margin:8px 0 0">
-      我們實測過市面上的優惠碼站：同一個 Klook 銀行碼，聚合站寫 <code class="c">HUWNAN2640009</code>，
-      Klook 官方頁上是 <code class="c">HUWNAN269509</code>——直接對不上。另一個知名站的品牌頁列了 20 組碼，
-      沒有一組標示核對日期，其中一組的到期日寫著 2133 年。
-    </p>
-    <p style="margin:8px 0 0">所以這裡的規則很簡單：<strong>每組碼都標明什麼時候核對的、從哪裡核對的</strong>；查不到有效碼時就直說沒有。</p>
+  <div class="trust">
+    <strong>為什麼要再做一個優惠碼站</strong>
+    <p>我們實測過市面上的站：同一組 Klook 銀行碼，聚合站寫 <code>HUWNAN2640009</code>，Klook 官方頁上是 <code>HUWNAN269509</code>——直接對不上。另一個知名站的品牌頁列了 20 組碼，沒有一組標核對日期，其中一組的到期日寫著 2133 年。</p>
+    <p>所以這裡只有兩條規則：<b>每組碼都標明何時核對、從哪核對</b>；<b>查不到有效碼就直說沒有</b>。</p>
   </div>
 
   <h2>品牌</h2>
-  {BRANDS.map((b) => (
-    <div class="card">
-      <div><a href={`/store/${b.slug}/`}><strong>{b.name}</strong></a> — {b.tagline}</div>
-      <div class="meta">
-        {b.codes.length > 0
-          ? `${b.codes.length} 組已核對的優惠碼`
-          : '目前沒有已核對的公開碼'}
-        {b.campaigns.length > 0 ? `・${b.campaigns.length} 檔進行中的活動` : ''}
-      </div>
-    </div>
-  ))}
+  <div class="grid">
+    {BRANDS.map((b) => (
+      <a class="brandcard" href={`/store/${b.slug}/`}>
+        <div class="row">
+          <div class="avatar">{initials(b.nameEn)}</div>
+          <div>
+            <div class="nm">{b.name}</div>
+            <div class="tag">{b.tagline}</div>
+          </div>
+        </div>
+        <div class="foot">
+          {b.codes.length > 0
+            ? <span class="pill pill-ok">✓ {b.codes.length} 組已核對</span>
+            : <span class="pill pill-none">目前沒有公開碼</span>}
+          {b.campaigns.length > 0 && <span class="pill pill-warn">{b.campaigns.length} 檔活動進行中</span>}
+        </div>
+      </a>
+    ))}
+  </div>
 </Base>
