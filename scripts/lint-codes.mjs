@@ -12,6 +12,8 @@ const src = readFileSync(new URL('../src/data/brands.ts', import.meta.url), 'utf
 // 两头都会把当天写的 verifiedAt 误判成未来日期（2026-09-21 实测被拦）。
 const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Shanghai' }).format(new Date());
 const errs = [];
+const warns = [];
+const daysBetween = (from, to) => Math.round((Date.parse(to) - Date.parse(from)) / 86400000);
 
 // 逐个 code 对象做浅解析（数据是手写字面量，不引入 TS 运行时）
 const blocks = src.split(/\{\s*\n\s*code:/).slice(1);
@@ -29,6 +31,19 @@ for (const b of blocks) {
   else if (/couponfollow|retailmenot|knoji|valuecom|worthepenny|dealy\.tw/i.test(s))
     errs.push(`${code}: source 指向别的券站（${s}）——只接受品牌官方页或联盟后台`);
   if (!r) errs.push(`${code}: 缺 restriction（没有条件就写「無」）`);
+
+  // 到期不算「不合规」，所以只警告不拦 build：
+  // 渲染层（src/lib/codes.ts）已经把过期码从 HTML 里摘掉了，留着数据不会骗到读者。
+  // 但如果这里 exit 1，一条码过期就会连带堵死所有无关的部署，代价远大于收益。
+  const e = get('expiresAt');
+  if (e && e < today) warns.push(`${code}: 已於 ${e} 过期（页面已自动摘除，可以从 brands.ts 删掉了）`);
+  else if (e && daysBetween(today, e) <= 7) warns.push(`${code}: ${daysBetween(today, e)} 天后（${e}）到期，该去官方页复核了`);
+  else if (v && daysBetween(v, today) > 30) warns.push(`${code}: 已 ${daysBetween(v, today)} 天没复核（页面已降级成「可能已更新」）`);
+}
+
+if (warns.length) {
+  console.warn('⚠️  券数据需要人工复核：');
+  warns.forEach((w) => console.warn('   · ' + w));
 }
 
 if (errs.length) {

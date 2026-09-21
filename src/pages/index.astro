@@ -1,8 +1,12 @@
 ---
 import Base from '../layouts/Base.astro';
 import { BRANDS } from '../data/brands';
-const withCodes = BRANDS.filter((b) => b.codes.length > 0);
-const allDates = BRANDS.flatMap((b) => b.codes.map((c) => c.verifiedAt)).sort();
+import { liveCodes, todayTW } from '../lib/codes';
+// 计数必须和品牌页用同一套过期口径，否则会出现「首頁說 7 組、點進去只剩 1 組」
+const today = todayTW();
+const live = new Map(BRANDS.map((b) => [b.slug, liveCodes(b, today)]));
+const withCodes = BRANDS.filter((b) => live.get(b.slug)!.length > 0);
+const allDates = BRANDS.flatMap((b) => live.get(b.slug)!.map((c) => c.verifiedAt)).sort();
 const latest = allDates.at(-1);
 const initials = (s: string) => s.replace(/[^A-Za-z]/g, '').slice(0, 2).toUpperCase() || s.slice(0, 1);
 ---
@@ -37,8 +41,8 @@ const initials = (s: string) => s.replace(/[^A-Za-z]/g, '').slice(0, 2).toUpperC
           </div>
         </div>
         <div class="foot">
-          {b.codes.length > 0
-            ? <span class="pill pill-ok">✓ {b.codes.length} 組已核對</span>
+          {live.get(b.slug)!.length > 0
+            ? <span class="pill pill-ok">✓ {live.get(b.slug)!.length} 組已核對</span>
             : <span class="pill pill-none">目前沒有公開碼</span>}
           {b.campaigns.length > 0 && <span class="pill pill-warn">{b.campaigns.length} 檔活動進行中</span>}
         </div>

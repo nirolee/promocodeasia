@@ -1,16 +1,22 @@
 ---
 import Base from '../../layouts/Base.astro';
 import { BRANDS } from '../../data/brands';
+import { liveCodes, expiredCodes, isStale, daysSince, todayTW, STALE_AFTER_DAYS } from '../../lib/codes';
 export function getStaticPaths() {
   return BRANDS.map((b) => ({ params: { slug: b.slug }, props: { brand: b } }));
 }
 const { brand } = Astro.props;
-const latest = brand.codes.map((c) => c.verifiedAt).sort().at(-1);
+const today = todayTW();
+// 过期的码不进 HTML。空态里要说明「上一组什么时候失效的」，所以另外留一份。
+const codes = liveCodes(brand, today);
+const dropped = expiredCodes(brand, today);
+const lastDropped = dropped.map((c) => c.expiresAt!).sort().at(-1);
+const latest = codes.map((c) => c.verifiedAt).sort().at(-1);
 const initials = brand.nameEn.replace(/[^A-Za-z]/g, '').slice(0, 2).toUpperCase();
 ---
 <Base
   title={`${brand.name}優惠碼${latest ? `（${latest} 核對）` : ''}｜PromoCodeAsia`}
-  description={`${brand.name}優惠碼整理：${brand.codes.length > 0 ? `${brand.codes.length} 組已核對的碼，附適用條件` : '目前沒有已核對的公開碼'}。每組標示核對日期與官方出處。`}>
+  description={`${brand.name}優惠碼整理：${codes.length > 0 ? `${codes.length} 組已核對的碼，附適用條件` : '目前沒有已核對的公開碼'}。每組標示核對日期與官方出處。`}>
   <div class="row" style="display:flex;align-items:center;gap:14px;margin-bottom:8px">
     <div class="avatar" style="width:48px;height:48px;font-size:18px">{initials}</div>
     <div>
@@ -25,32 +31,35 @@ const initials = brand.nameEn.replace(/[^A-Za-z]/g, '').slice(0, 2).toUpperCase(
   </p>
 
   <h2>優惠碼</h2>
-  {brand.codes.length === 0 ? (
-    <div class="empty">
-      <strong>目前沒有已核對的公開優惠碼。</strong>
-      <p>
-        我們寧可這樣寫，也不放沒驗證過的碼。{brand.name} 現階段的折扣多半綁在活動或會員身分上，
-        建議直接看 <a href={brand.officialUrl} rel="nofollow noopener" target="_blank">官方頁面</a>。
-        一旦有可用的碼，我們會補上並標註核對日期。
-      </p>
-    </div>
-  ) : (
-    brand.codes.map((c) => (
-      <div class="codecard">
-        <div class="benefit">{c.benefit}</div>
-        <div class="codeline">
-          <div class="codeval">{c.code}</div>
-          <button class="copybtn" data-code={c.code} type="button">複製</button>
-        </div>
-        <div class="kv"><b>適用條件</b>：{c.restriction}</div>
-        <div class="kv">
-          <span class="pill pill-ok">✓ {c.verifiedAt} 核對</span>
-          　出處：<a href={c.source} rel="nofollow noopener" target="_blank">品牌官方頁</a>
-          {c.expiresAt ? `　官方標示失效日：${c.expiresAt}` : ''}
-        </div>
+  {codes.map((c) => (
+    <div class="codecard" data-expires={c.expiresAt ?? ''} data-verified={c.verifiedAt}>
+      <div class="benefit">{c.benefit}</div>
+      <div class="codeline">
+        <div class="codeval">{c.code}</div>
+        <button class="copybtn" data-code={c.code} type="button">複製</button>
       </div>
-    ))
-  )}
+      <div class="kv"><b>適用條件</b>：{c.restriction}</div>
+      <div class="kv">
+        {isStale(c, today)
+          ? <span class="pill pill-warn js-verify">⚠ {c.verifiedAt} 核對，已 {daysSince(c.verifiedAt, today)} 天未複查</span>
+          : <span class="pill pill-ok js-verify">✓ {c.verifiedAt} 核對</span>}
+        　出處：<a href={c.source} rel="nofollow noopener" target="_blank">品牌官方頁</a>
+        {c.expiresAt ? `　官方標示失效日：${c.expiresAt}` : ''}
+      </div>
+    </div>
+  ))}
+
+  {/* 空态。codes 为空时直接显示；客户端把最后一张卡摘掉时由脚本 removeAttribute('hidden')。 */}
+  <div class="empty" id="codes-empty" hidden={codes.length > 0}>
+    <strong>目前沒有已核對的公開優惠碼。</strong>
+    <p>
+      {lastDropped
+        ? `上一批公開碼已於 ${lastDropped} 到期，我們還沒核到新的——寧可先空著，也不把過期碼留在頁上。`
+        : `我們寧可這樣寫，也不放沒驗證過的碼。${brand.name} 現階段的折扣多半綁在活動或會員身分上。`}
+      建議直接看 <a href={brand.officialUrl} rel="nofollow noopener" target="_blank">官方頁面</a>。
+      一旦有可用的碼，我們會補上並標註核對日期。
+    </p>
+  </div>
 
   {brand.campaigns.length > 0 && (
     <>
@@ -72,4 +81,39 @@ const initials = brand.nameEn.replace(/[^A-Za-z]/g, '').slice(0, 2).toUpperCase(
     <li>多數銀行碼需要<b>先點進品牌的活動頁</b>才會生效，直接在結帳頁貼上可能無效。</li>
     <li>每個帳號通常每月限用一次，且數量有限、以結帳順序為準。</li>
   </ul>
+
+  {/*
+    客户端兜底。为什么需要：这是静态站，过滤发生在 build 时，而 build 只在 push 时触发。
+    如果 9-30 之后没人推代码，构建产物里那 6 组 KKday 银行码会一直挂着——
+    页脚却写着「不放過期碼充數」，正好打在唯一的卖点上。所以在浏览器里再判一次。
+    同理把「已 N 天未複查」也在客户端重算，否则这个天数会停在最后一次 build 的那天。
+  */}
+  <script is:inline define:vars={{ staleAfter: STALE_AFTER_DAYS }}>
+    (function () {
+      var today;
+      try {
+        today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Shanghai' }).format(new Date());
+      } catch (e) {
+        return; // 取不到台北日期就什么都不改，保持 build 时的结果
+      }
+      var cards = document.querySelectorAll('.codecard');
+      for (var i = 0; i < cards.length; i++) {
+        var el = cards[i];
+        var exp = el.getAttribute('data-expires');
+        if (exp && exp < today) { el.remove(); continue; }
+        var v = el.getAttribute('data-verified');
+        var pill = el.querySelector('.js-verify');
+        if (!v || !pill) continue;
+        var days = Math.round((Date.parse(today) - Date.parse(v)) / 86400000);
+        if (days > staleAfter) {
+          pill.className = 'pill pill-warn js-verify';
+          pill.textContent = '⚠ ' + v + ' 核對，已 ' + days + ' 天未複查';
+        }
+      }
+      if (!document.querySelector('.codecard')) {
+        var empty = document.getElementById('codes-empty');
+        if (empty) empty.removeAttribute('hidden');
+      }
+    })();
+  </script>
 </Base>
