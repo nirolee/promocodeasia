@@ -1,7 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import { BRANDS } from '../../data/brands';
-import { liveCodes, expiredCodes, isStale, daysSince, daysUntil, todayTW, hasSubstance, STALE_AFTER_DAYS } from '../../lib/codes';
+import { liveCodes, expiredCodes, isStale, daysSince, daysUntil, todayTW, weekdayTW, groupByCard, hasSubstance, STALE_AFTER_DAYS } from '../../lib/codes';
 export function getStaticPaths() {
   return BRANDS.map((b) => ({ params: { slug: b.slug }, props: { brand: b } }));
 }
@@ -32,6 +32,25 @@ const merchantHref = brand.affiliateUrl || brand.officialUrl;
 const isAffiliate = Boolean(brand.affiliateUrl);
 // 既没码也没活动 = 空壳页，不参与排名（sitemap 那边用同一个判据排除）
 const substantial = hasSubstance(brand, today);
+// 「谁能用」两个入口。为什么要做：补完码之后 Klook 30 组、KKday 30 组，
+// 平铺一个列表，拿玉山卡的读者得逐条扫完才知道哪条跟自己有关。
+const WD_NAMES = ['一', '二', '三', '四', '五', '六', '日'];
+const wd = weekdayTW(today);
+// 限定星期的码（KKday 有 9 组）。竞品没人做「今天能用哪几组」——它既是点击理由，
+// 也是唯一能让人每天回来看一次的东西。
+const weekdayCodes = codes.filter((c) => c.weekday !== undefined);
+const todayCodes = weekdayCodes.filter((c) => c.weekday === wd);
+// 卡别索引：只在真的多到需要导航时才出（阈值 8 组，低于这个数直接扫列表更快）
+const cardGroups = groupByCard(codes);
+// 同一张卡的码排在一起。原数据顺序是按官方表格来的，同一家银行的两组会隔十几条，
+// 锚点跳过去只能看到一条。没有 card 的（按类别/星期限定）保持原顺序排在后面。
+const ordered = [
+  ...cardGroups.flatMap((g) => g.codes),
+  ...codes.filter((c) => !c.card),
+];
+// 每张卡的第一组码挂锚点
+const anchorOf = new Map(cardGroups.map((g) => [g.codes[0].code, g.card]));
+const showCardIndex = cardGroups.length >= 8;
 ---
 <Base
   noindex={!substantial}
@@ -50,9 +69,41 @@ const substantial = hasSubstance(brand, today);
       : <span class="pill pill-none">尚無已核對的公開碼</span>}
   </p>
 
+  {weekdayCodes.length > 0 && (
+    <div class="today" id="today-box">
+      <strong>今天（星期<span id="today-wd">{WD_NAMES[wd]}</span>）可以用的限定碼</strong>
+      <ul id="today-list" class="todaylist">
+        {todayCodes.map((c) => (
+          <li data-weekday={c.weekday}><b>{c.code}</b>　{c.benefit}</li>
+        ))}
+      </ul>
+      <p id="today-none" class="kv" hidden={todayCodes.length > 0}>
+        今天沒有星期限定碼；下面那些不限星期的照常可用。
+      </p>
+      <p class="kv">
+        這個品牌有 {weekdayCodes.length} 組碼綁定星期幾下單，每天能用的不一樣。
+      </p>
+    </div>
+  )}
+
+  {showCardIndex && (
+    <div class="cardindex">
+      <strong>先找你的卡</strong>
+      <p class="kv">共 {cardGroups.length} 種付款方式，點一下跳到那組。</p>
+      <ul class="cardlist">
+        {cardGroups.map((g) => (
+          <li><a href={`#card-${encodeURIComponent(g.card)}`}>{g.card}<span class="n">{g.codes.length}</span></a></li>
+        ))}
+      </ul>
+    </div>
+  )}
+
   <h2>優惠碼</h2>
-  {codes.map((c) => (
-    <div class="codecard" data-expires={c.expiresAt ?? ''} data-verified={c.verifiedAt}>
+  {ordered.map((c) => (
+    <div class="codecard"
+      id={anchorOf.has(c.code) ? `card-${encodeURIComponent(anchorOf.get(c.code)!)}` : undefined}
+      data-weekday={c.weekday ?? ''}
+      data-expires={c.expiresAt ?? ''} data-verified={c.verifiedAt}>
       <div class="benefit">{c.benefit}</div>
       <div class="codeline">
         <div class="codeval">{c.code}</div>
@@ -176,6 +227,35 @@ const substantial = hasSubstance(brand, today);
           }
         }
       }
+      // 星期限定码：build 只在 push 时跑，不重算的话「今天可用」会停在最后一次构建那天。
+      // 口径必须和 lib/codes.ts 的 weekdayTW 一致：0=周一。
+      var box = document.getElementById('today-box');
+      if (box) {
+        var names = ['一', '二', '三', '四', '五', '六', '日'];
+        var wdNow = (new Date(today + 'T00:00:00Z').getUTCDay() + 6) % 7;
+        var lbl = document.getElementById('today-wd');
+        if (lbl) lbl.textContent = names[wdNow];
+        var list = document.getElementById('today-list');
+        if (list) {
+          list.innerHTML = '';
+          var all = document.querySelectorAll('.codecard[data-weekday]');
+          for (var j = 0; j < all.length; j++) {
+            var w = all[j].getAttribute('data-weekday');
+            if (w === '' || Number(w) !== wdNow) continue;
+            var cd = all[j].querySelector('.codeval');
+            var bn = all[j].querySelector('.benefit');
+            var li = document.createElement('li');
+            var b = document.createElement('b');
+            b.textContent = cd ? cd.textContent : '';
+            li.appendChild(b);
+            li.appendChild(document.createTextNode('　' + (bn ? bn.textContent : '')));
+            list.appendChild(li);
+          }
+          var none = document.getElementById('today-none');
+          if (none) { if (list.children.length) none.setAttribute('hidden', ''); else none.removeAttribute('hidden'); }
+        }
+      }
+
       if (!document.querySelector('.codecard')) {
         var empty = document.getElementById('codes-empty');
         if (empty) empty.removeAttribute('hidden');

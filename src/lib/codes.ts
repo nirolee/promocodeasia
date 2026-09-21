@@ -67,3 +67,22 @@ export function expiredCodes(b: Brand, today: string = todayTW()): Code[] {
 export function hasSubstance(brand: Brand, today: string = todayTW()): boolean {
   return liveCodes(brand, today).length > 0 || brand.campaigns.length > 0;
 }
+
+/** 台北时区的今天是星期几，0=周一 … 6=周日。与 Code.weekday 同一口径。
+ *  注意：静态站只在 push 时 build，所以页面上还要在客户端重算一次，
+ *  否则「今天可用」会停在最后一次构建那天——和失效倒数是同一个坑。 */
+export function weekdayTW(today: string = todayTW()): number {
+  return (new Date(today + 'T00:00:00Z').getUTCDay() + 6) % 7;
+}
+
+/** 按「谁能用」给码排序并分组：先分付款方式，卡名相同的排在一起。
+ *  没有 card 的（按类别/星期限定的）排在后面，保持原顺序。 */
+export function groupByCard(codes: Code[]): { card: string; codes: Code[] }[] {
+  const m = new Map<string, Code[]>();
+  for (const c of codes) {
+    if (!c.card) continue;
+    if (!m.has(c.card)) m.set(c.card, []);
+    m.get(c.card)!.push(c);
+  }
+  return [...m.entries()].map(([card, codes]) => ({ card, codes }));
+}

@@ -171,3 +171,25 @@ footer p { margin: 6px 0; }
   border-radius: 10px;
 }
 .outbtn:hover { filter: brightness(1.08); }
+
+/* 「今天可用」与「先找你的卡」：30 组码平铺读者扫不动，这两块是入口。 */
+.today, .cardindex {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin: 18px 0;
+  background: var(--card);
+}
+.today { border-left: 4px solid var(--accent); }
+.todaylist { margin: 8px 0 0; padding-left: 18px; }
+.todaylist li { margin: 4px 0; }
+.cardlist { list-style: none; margin: 10px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.cardlist a {
+  display: inline-flex; align-items: center; gap: 6px;
+  border: 1px solid var(--line); border-radius: 999px;
+  padding: 5px 12px; text-decoration: none; font-size: 14px;
+}
+.cardlist a:hover { border-color: var(--accent); }
+.cardlist .n { opacity: .6; font-size: 12px; }
+/* 锚点跳转时别被顶栏盖住 */
+.codecard[id] { scroll-margin-top: 72px; }
