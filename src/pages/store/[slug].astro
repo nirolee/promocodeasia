@@ -1,7 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import { BRANDS } from '../../data/brands';
-import { liveCodes, expiredCodes, isStale, daysSince, daysUntil, todayTW, weekdayTW, groupByCard, hasSubstance, STALE_AFTER_DAYS } from '../../lib/codes';
+import { liveCodes, expiredCodes, isStale, daysSince, daysUntil, todayTW, weekdayTW, groupByCard, hasSubstance, versionEnd, versionStale, versionLabel, STALE_AFTER_DAYS } from '../../lib/codes';
 export function getStaticPaths() {
   return BRANDS.map((b) => ({ params: { slug: b.slug }, props: { brand: b } }));
 }
@@ -110,6 +110,8 @@ const showCardIndex = cardGroups.length >= 8;
     <div class="codecard"
       id={anchorOf.has(c.code) ? `card-${encodeURIComponent(anchorOf.get(c.code)!)}` : undefined}
       data-weekday={c.weekday ?? ''}
+      data-version-end={versionEnd(c) ?? ''}
+      data-version-label={c.officialVersion ? versionLabel(c.officialVersion) : ''}
       data-expires={c.expiresAt ?? ''} data-verified={c.verifiedAt}>
       <div class="benefit">{c.benefit}</div>
       <div class="codeline">
@@ -123,7 +125,9 @@ const showCardIndex = cardGroups.length >= 8;
       </div>
       <div class="kv"><b>適用條件</b>：{c.restriction}</div>
       <div class="kv">
-        {isStale(c, today)
+        {versionStale(c, today)
+          ? <span class="pill pill-warn js-verify">⚠ 此為 {versionLabel(c.officialVersion!)} 版，官方頁註明每月更換，新版尚未核對</span>
+          : isStale(c, today)
           ? <span class="pill pill-warn js-verify">⚠ {c.verifiedAt} 核對，已 {daysSince(c.verifiedAt, today)} 天未複查</span>
           : <span class="pill pill-ok js-verify">✓ {c.verifiedAt} 核對</span>}
         　出處：<a
@@ -131,6 +135,18 @@ const showCardIndex = cardGroups.length >= 8;
           data-brand={brand.slug}
           data-code-id={c.code}
           href={c.source} rel="nofollow noopener" target="_blank">品牌官方頁</a>
+        {/*
+          官方没给失效日、但标了「N 月版本」的码（Klook 30 组全是）：
+          月底前显示换版倒数；月底后由上面的 js-verify 降级，这里隐藏。
+          不走 expiresAt —— 那是官方标注的失效日，Klook 没公布，不替它编。
+        */}
+        {versionEnd(c) && !versionStale(c, today) && (
+          <span class="js-version" data-version-end={versionEnd(c)} data-version-label={versionLabel(c.officialVersion!)}>
+            　<span class={daysUntil(versionEnd(c)!, today) <= 3 ? 'pill pill-warn' : 'pill pill-none'}>
+              {versionLabel(c.officialVersion!)} 版・官方頁註明月底換版・剩 {daysUntil(versionEnd(c)!, today)} 天
+            </span>
+          </span>
+        )}
         {c.expiresAt && (
           <span class="js-expiry" data-expires={c.expiresAt}>
             　<span class={daysUntil(c.expiresAt, today) <= 3 ? 'pill pill-warn' : 'pill pill-none'}>
@@ -220,6 +236,24 @@ const showCardIndex = cardGroups.length >= 8;
         if (days > staleAfter) {
           pill.className = 'pill pill-warn js-verify';
           pill.textContent = '⚠ ' + v + ' 核對，已 ' + days + ' 天未複查';
+        }
+        // 「N 月版」换版：月底一过就降级核对 pill，月底前刷新倒数。同一个理由——build 只在 push 时跑。
+        var vend = el.getAttribute('data-version-end');
+        if (vend && pill) {
+          var vlab = el.getAttribute('data-version-label') || '';
+          var vleft = Math.round((Date.parse(vend) - Date.parse(today)) / 86400000);
+          var vbox = el.querySelector('.js-version');
+          if (vleft < 0) {
+            pill.className = 'pill pill-warn js-verify';
+            pill.textContent = '⚠ 此為 ' + vlab + ' 版，官方頁註明每月更換，新版尚未核對';
+            if (vbox) vbox.remove();
+          } else if (vbox) {
+            var vs = vbox.querySelector('.pill');
+            if (vs) {
+              vs.className = vleft <= 3 ? 'pill pill-warn' : 'pill pill-none';
+              vs.textContent = vlab + ' 版・官方頁註明月底換版・剩 ' + vleft + ' 天';
+            }
+          }
         }
         // 倒数同样要在浏览器里重算，否则「剩 N 天」会停在最后一次 build 的那天
         if (exp) {

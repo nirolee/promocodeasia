@@ -2,7 +2,7 @@
 import Base from '../layouts/Base.astro';
 import { BRANDS } from '../data/brands';
 import { CHANGES } from '../data/changelog';
-import { liveCodes, daysUntil, todayTW } from '../lib/codes';
+import { liveCodes, daysUntil, todayTW, versionEnd, versionLabel } from '../lib/codes';
 
 const today = todayTW();
 
@@ -21,6 +21,19 @@ for (const s of soon) {
   const k = s.code.expiresAt!;
   if (!byDate.has(k)) byDate.set(k, []);
   byDate.get(k)!.push(s);
+}
+// 月度換版：官方没给失效日、只标了「N 月版本」的码（Klook 那 30 组）。
+// 和上面「即將失效」分开列——那是官方标的失效日，这是我们从「每月更換」推出来的换版时点，
+// 混在一起会让读者以为 Klook 也公布了日期。
+const rotating = BRANDS.flatMap((b) =>
+  liveCodes(b, today)
+    .filter((c) => versionEnd(c) && daysUntil(versionEnd(c)!, today) <= SOON_DAYS)
+    .map((c) => ({ brand: b, code: c, end: versionEnd(c)!, left: daysUntil(versionEnd(c)!, today) }))
+);
+const rotByBrand = new Map<string, typeof rotating>();
+for (const r of rotating) {
+  if (!rotByBrand.has(r.brand.slug)) rotByBrand.set(r.brand.slug, []);
+  rotByBrand.get(r.brand.slug)!.push(r);
 }
 const totalLive = BRANDS.reduce((n, b) => n + liveCodes(b, today).length, 0);
 const lastChange = CHANGES[0]?.date;
@@ -62,6 +75,26 @@ const lastChange = CHANGES[0]?.date;
         </ul>
       </div>
     ))
+  )}
+
+  {rotating.length > 0 && (
+    <>
+      <h2>月底換版（官方沒標失效日）</h2>
+      <p class="lede">
+        這些碼官方頁只寫了「銀行碼每月更換」，<b>沒有給失效日</b>。
+        我們不替品牌編一個日期，但月底一過，它們在品牌頁上會從「✓ 已核對」變成「⚠ 新版尚未核對」，
+        直到我們核完新一輪。
+      </p>
+      {[...rotByBrand.values()].map((rs) => (
+        <div class="campaign">
+          <strong>
+            <a href={`/store/${rs[0].brand.slug}/`}>{rs[0].brand.name}</a>
+            　{rs.length} 組{versionLabel(rs[0].code.officialVersion!)}版
+            　{rs[0].left < 0 ? '已過月底，等待核對新版' : rs[0].left === 0 ? '今天是月底' : `${rs[0].end} 換版・剩 ${rs[0].left} 天`}
+          </strong>
+        </div>
+      ))}
+    </>
   )}
 
   <h2>異動紀錄</h2>

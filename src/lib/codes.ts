@@ -86,3 +86,25 @@ export function groupByCard(codes: Code[]): { card: string; codes: Code[] }[] {
   }
   return [...m.entries()].map(([card, codes]) => ({ card, codes }));
 }
+
+/**
+ * 「N 月版」码的月底日期，YYYY-MM-DD。只对填了 officialVersion 且没有 expiresAt 的码有意义。
+ * 不是失效日 —— 官方没公布失效日，这只是「官方页说每月换版」推出来的换版时点。
+ */
+export function versionEnd(c: Code): string | null {
+  if (!c.officialVersion || c.expiresAt) return null;
+  const [y, m] = c.officialVersion.split('-').map(Number);
+  const last = new Date(Date.UTC(y, m, 0)).getUTCDate();   // 下个月第 0 天 = 本月最后一天
+  return `${c.officialVersion}-${String(last).padStart(2, '0')}`;
+}
+
+/** 已过月底、新版尚未核对：要把「✓ 已核對」降成警告，但**不下架**——码可能还有效，只是我们不知道。 */
+export function versionStale(c: Code, today: string = todayTW()): boolean {
+  const end = versionEnd(c);
+  return !!end && end < today;
+}
+
+/** 'YYYY-MM' → 显示用的「9 月」。 */
+export function versionLabel(v: string): string {
+  return `${Number(v.slice(5, 7))} 月`;
+}
