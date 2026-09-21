@@ -1,7 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import { BRANDS } from '../../data/brands';
-import { liveCodes, expiredCodes, isStale, daysSince, todayTW, hasSubstance, STALE_AFTER_DAYS } from '../../lib/codes';
+import { liveCodes, expiredCodes, isStale, daysSince, daysUntil, todayTW, hasSubstance, STALE_AFTER_DAYS } from '../../lib/codes';
 export function getStaticPaths() {
   return BRANDS.map((b) => ({ params: { slug: b.slug }, props: { brand: b } }));
 }
@@ -13,6 +13,18 @@ const dropped = expiredCodes(brand, today);
 const lastDropped = dropped.map((c) => c.expiresAt!).sort().at(-1);
 const latest = codes.map((c) => c.verifiedAt).sort().at(-1);
 const initials = brand.nameEn.replace(/[^A-Za-z]/g, '').slice(0, 2).toUpperCase();
+// 标题：竞品这个品类的卖点是「組數 + 月份」（實測前排標題都寫「45 組」「2026年9月最新」），
+// 组数我们拼不过就算了，但「逐組核對」是他们没有的——排第一那篇自己标的更新日是 2026-08-03。
+// 日期用 M/D 短式，标题在 SERP 上只有约 30 个全角字的空间。
+const shortDate = latest ? `${Number(latest.slice(5, 7))}/${Number(latest.slice(8, 10))}` : '';
+const pageTitle = codes.length > 0
+  ? `${brand.name}優惠碼｜${codes.length} 組，${shortDate} 逐組核對 - PromoCodeAsia`
+  : `${brand.name}優惠碼｜目前沒有可用的公開碼 - PromoCodeAsia`;
+const withExpiry = codes.filter((c) => c.expiresAt).length;
+const pageDesc = codes.length > 0
+  ? `${brand.name}優惠碼 ${codes.length} 組，每組標明適用條件、${shortDate} 的核對日期與官方出處`
+    + `${withExpiry > 0 ? `，其中 ${withExpiry} 組附官方失效日` : ''}。過了失效日自動下架，不留過期碼。`
+  : `我們目前查不到 ${brand.name} 可輸入的公開優惠碼，所以這頁直接寫明沒有，不放沒驗證過的碼充數。`;
 // 出站链接：联盟批下来之前先用官方地址。
 // 为什么不等联盟批：读者看完码在这页是死路一条，没有任何下一步。
 // 等批准再补，中间这段时间「有多少人真想买」的数据就永远拿不到了。
@@ -23,8 +35,8 @@ const substantial = hasSubstance(brand, today);
 ---
 <Base
   noindex={!substantial}
-  title={`${brand.name}優惠碼${latest ? `（${latest} 核對）` : ''}｜PromoCodeAsia`}
-  description={`${brand.name}優惠碼整理：${codes.length > 0 ? `${codes.length} 組已核對的碼，附適用條件` : '目前沒有已核對的公開碼'}。每組標示核對日期與官方出處。`}>
+  title={pageTitle}
+  description={pageDesc}>
   <div class="row" style="display:flex;align-items:center;gap:14px;margin-bottom:8px">
     <div class="avatar" style="width:48px;height:48px;font-size:18px">{initials}</div>
     <div>
@@ -61,7 +73,15 @@ const substantial = hasSubstance(brand, today);
           data-brand={brand.slug}
           data-code-id={c.code}
           href={c.source} rel="nofollow noopener" target="_blank">品牌官方頁</a>
-        {c.expiresAt ? `　官方標示失效日：${c.expiresAt}` : ''}
+        {c.expiresAt && (
+          <span class="js-expiry" data-expires={c.expiresAt}>
+            　<span class={daysUntil(c.expiresAt, today) <= 3 ? 'pill pill-warn' : 'pill pill-none'}>
+              {daysUntil(c.expiresAt, today) === 0
+                ? `今天是最後一天（${c.expiresAt}）`
+                : `${c.expiresAt} 失效・剩 ${daysUntil(c.expiresAt, today)} 天`}
+            </span>
+          </span>
+        )}
       </div>
     </div>
   ))}
@@ -142,6 +162,18 @@ const substantial = hasSubstance(brand, today);
         if (days > staleAfter) {
           pill.className = 'pill pill-warn js-verify';
           pill.textContent = '⚠ ' + v + ' 核對，已 ' + days + ' 天未複查';
+        }
+        // 倒数同样要在浏览器里重算，否则「剩 N 天」会停在最后一次 build 的那天
+        if (exp) {
+          var box = el.querySelector('.js-expiry');
+          var span = box && box.querySelector('.pill');
+          if (span) {
+            var left = Math.round((Date.parse(exp) - Date.parse(today)) / 86400000);
+            span.className = left <= 3 ? 'pill pill-warn' : 'pill pill-none';
+            span.textContent = left === 0
+              ? '今天是最後一天（' + exp + '）'
+              : exp + ' 失效・剩 ' + left + ' 天';
+          }
         }
       }
       if (!document.querySelector('.codecard')) {

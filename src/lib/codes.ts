@@ -20,6 +20,11 @@ export function isExpired(c: Code, today: string = todayTW()): boolean {
   return !!c.expiresAt && c.expiresAt < today;
 }
 
+/** 距离失效日还有几天。0 = 今天是最后一天；负数 = 已过期。 */
+export function daysUntil(date: string, today: string = todayTW()): number {
+  return Math.round((Date.parse(date) - Date.parse(today)) / 86400000);
+}
+
 /** 距今天几天前核对的。 */
 export function daysSince(date: string, today: string = todayTW()): number {
   return Math.round((Date.parse(today) - Date.parse(date)) / 86400000);

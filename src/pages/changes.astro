@@ -1,0 +1,85 @@
+---
+import Base from '../layouts/Base.astro';
+import { BRANDS } from '../data/brands';
+import { CHANGES } from '../data/changelog';
+import { liveCodes, daysUntil, todayTW } from '../lib/codes';
+
+const today = todayTW();
+
+// 即將失效：直接从 brands.ts 算，不手写——手写的清单迟早和真实数据对不上。
+// 只看 14 天内，再远的对读者没有行动意义。
+const SOON_DAYS = 14;
+const soon = BRANDS.flatMap((b) =>
+  liveCodes(b, today)
+    .filter((c) => c.expiresAt && daysUntil(c.expiresAt!, today) <= SOON_DAYS)
+    .map((c) => ({ brand: b, code: c, left: daysUntil(c.expiresAt!, today) }))
+).sort((a, b) => a.left - b.left || a.brand.name.localeCompare(b.brand.name));
+
+// 按失效日分组
+const byDate = new Map<string, typeof soon>();
+for (const s of soon) {
+  const k = s.code.expiresAt!;
+  if (!byDate.has(k)) byDate.set(k, []);
+  byDate.get(k)!.push(s);
+}
+const totalLive = BRANDS.reduce((n, b) => n + liveCodes(b, today).length, 0);
+const lastChange = CHANGES[0]?.date;
+---
+<Base
+  title="優惠碼異動紀錄｜哪些要失效、我們改了什麼 - PromoCodeAsia"
+  description={`目前收錄 ${totalLive} 組已核對的優惠碼。這頁列出 ${SOON_DAYS} 天內即將失效的碼，以及我們每次增刪改的紀錄——包含我們自己查錯後的更正。`}>
+  <h1>異動紀錄</h1>
+  <p class="lede">
+    目前收錄 <b>{totalLive}</b> 組已核對的優惠碼{lastChange ? `・最後一次異動 ${lastChange}` : ''}。
+  </p>
+  <p class="lede">
+    優惠碼會過期，銀行合作碼多半每月換一次。與其讓你每次重看一整頁，
+    這裡直接列出<b>快失效的</b>和<b>我們改過什麼</b>——包括我們自己查錯後的更正。
+  </p>
+
+  <h2>{SOON_DAYS} 天內即將失效</h2>
+  {soon.length === 0 ? (
+    <div class="empty">
+      <strong>接下來 {SOON_DAYS} 天沒有碼會失效。</strong>
+      <p>這裡只列官方有標示失效日的碼；沒標日期的碼不會出現在這一節。</p>
+    </div>
+  ) : (
+    [...byDate.entries()].map(([date, items]) => (
+      <div class="campaign">
+        <strong>
+          {date}
+          　<span class={items[0].left <= 3 ? 'pill pill-warn' : 'pill pill-none'}>
+            {items[0].left === 0 ? '今天是最後一天' : `剩 ${items[0].left} 天`}
+          </span>
+        </strong>
+        <ul class="steps">
+          {items.map((s) => (
+            <li>
+              <a href={`/store/${s.brand.slug}/`}>{s.brand.name}</a>
+              　<code>{s.code.code}</code>　{s.code.benefit}
+            </li>
+          ))}
+        </ul>
+      </div>
+    ))
+  )}
+
+  <h2>異動紀錄</h2>
+  {CHANGES.map((c) => (
+    <div class="codecard" style="padding:18px 20px">
+      <div class="benefit" style="font-size:15px">
+        <span class="pill pill-ok">{c.date}</span>
+      </div>
+      <p style="margin:10px 0 0"><b>{c.summary}</b></p>
+      {c.details && c.details.length > 0 && (
+        <ul class="steps">{c.details.map((d) => <li>{d}</li>)}</ul>
+      )}
+    </div>
+  ))}
+
+  <h2>沒有變動的時候，這裡就不會有新條目</h2>
+  <p class="lede">
+    我們不為了看起來勤快而灌水。銀行碼多半在每月月初換一輪，
+    到時候這裡才會多一條；中間沒事就是沒事。
+  </p>
+</Base>

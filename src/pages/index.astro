@@ -11,7 +11,7 @@ const latest = allDates.at(-1);
 const initials = (s: string) => s.replace(/[^A-Za-z]/g, '').slice(0, 2).toUpperCase() || s.slice(0, 1);
 ---
 <Base
-  title="優惠碼查詢｜每一組都標示核對日期與出處 - PromoCodeAsia"
+  title={`優惠碼查詢｜${BRANDS.reduce((n, b) => n + live.get(b.slug)!.length, 0)} 組，每組標示核對日期與失效日 - PromoCodeAsia`}
   description="Klook、iHerb、Trip.com、KKday 等品牌的優惠碼整理。每組碼標示我們最後核對的日期與官方出處；查不到有效碼時就直說沒有，不放過期碼。">
   <h1>優惠碼，只放我們核對過的</h1>
   <p class="lede">
@@ -24,6 +24,10 @@ const initials = (s: string) => s.replace(/[^A-Za-z]/g, '').slice(0, 2).toUpperC
     <p>優惠碼幾乎都有到期日，而且銀行合作碼多半每月換一次。問題是大多數整理頁只在頁首寫一個「最後更新」，<b>不告訴你每一組碼各自是什麼時候、從哪裡核對的</b>——排在搜尋結果最前面的那篇，自己標的更新日期是 2026-08-03。</p>
     <p>所以這裡只有兩條規則：<b>每組碼都標明何時核對、從哪一頁核對</b>；<b>過了官方標示的失效日就自動下架，查不到有效碼就直說沒有</b>。</p>
   </div>
+
+  <p class="lede" style="margin-top:18px">
+    <a href="/changes/">看哪些碼快失效了、我們最近改了什麼 →</a>
+  </p>
 
   <h2>品牌</h2>
   <p class="lede" style="margin-bottom:14px">

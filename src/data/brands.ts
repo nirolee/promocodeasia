@@ -342,7 +342,7 @@ export const BRANDS: Brand[] = [
       {
         code: '26MOON24',
         benefit: '中秋佳節好禮特惠 76 折',
-        restriction: '部分特殊商品不參與；以官方頁面標示的適用範圍為準',
+        restriction: '部分特殊商品不參與；官方首頁橫幅是以連結帶入此碼（網址參數 pcode=26MOON24），結帳頁若沒自動套用可手動輸入',
         verifiedAt: '2026-09-21',
         source: 'https://tw.iherb.com/',
       },
