@@ -806,7 +806,11 @@ export const BRANDS: Brand[] = [
     tagline: '手機殼、3C 配件',
     officialUrl: 'https://www.casetify.com/zh_TW/',
     admitadProgram: 'CASETiFY WW（3.50%）',
-    affiliateUrl: '',
+    // Admitad program 33090 于 2026-09-22 批准（邮件通知）。跳转链实测落到
+    // casetify.com/?im_ref=…&partner=admitad（CASETiFY 底层走 Impact，Admitad 是二级）。
+    // 注意：这页目前 0 组码、0 个活动，hasSubstance=false → 仍是 noindex、不进 sitemap。
+    // 接链接只是让点进来的人有个带追踪的出口，不会因此带来搜索流量。
+    affiliateUrl: 'https://bywiola.com/g/tv8h1uy8ni1a1e4d44722f7a77e67e/',
     codes: [],
     campaigns: [],
   },
