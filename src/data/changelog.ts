@@ -25,6 +25,14 @@ export type Change = {
 
 export const CHANGES: Change[] = [
   {
+    date: '2026-09-22',
+    summary: 'CASETiFY 補上 3 檔官方活動；Klook、CASETiFY 出站連結改為合作連結。',
+    details: [
+      'CASETiFY：核對官方「優惠碼及優惠券」頁，補上 Club 會員 9 折、學生 85 折（UNiDAYS）、滿 $40 免運三檔。仍然沒有可輸入的公開碼——三檔都要先登入或驗證身份。',
+      'Klook 與 CASETiFY 的「前往官方網站」按鈕改為合作推廣連結，頁面上有標示；是否使用不影響你付的價格。',
+    ],
+  },
+  {
     date: '2026-09-21',
     summary: '補齊 Klook 與 KKday 的官方公開碼：14 組 → 61 組。',
     details: [

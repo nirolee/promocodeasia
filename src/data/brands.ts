@@ -812,7 +812,28 @@ export const BRANDS: Brand[] = [
     // 接链接只是让点进来的人有个带追踪的出口，不会因此带来搜索流量。
     affiliateUrl: 'https://bywiola.com/g/tv8h1uy8ni1a1e4d44722f7a77e67e/',
     codes: [],
-    campaigns: [],
+    // 2026-09-22 用真瀏覽器核官方「優惠碼及優惠券」頁（/zh_TW/promotions）：
+    // 三檔全是會員/身份綁定，沒有可複製的公開碼，所以放 campaigns 不放 codes。
+    campaigns: [
+      {
+        title: '加入 CASETiFY Club 會員享 9 折',
+        detail: '優惠碼在加入 Club 後由帳號發放（官方頁按鈕是「獲取優惠碼」），不是公開字串，得先登入會員。',
+        period: '常態（2026-09-22 核對時進行中）',
+        source: 'https://www.casetify.com/zh_TW/promotions',
+      },
+      {
+        title: '學生專屬 85 折',
+        detail: '需先透過 UNiDAYS 驗證學生身份，驗證後才拿得到折扣，無法直接輸入碼。',
+        period: '常態',
+        source: 'https://www.casetify.com/zh_TW/promotions',
+      },
+      {
+        title: '訂單滿 $40 免運費',
+        detail: '官方首頁標示「訂單滿 $40 即可享免運費」，幣別與門檻以結帳頁實際顯示為準；另有 10 天無條件退換貨。',
+        period: '常態',
+        source: 'https://www.casetify.com/zh_TW/',
+      },
+    ],
   },
 ];
 
