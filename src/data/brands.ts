@@ -777,6 +777,42 @@ export const BRANDS: Brand[] = [
     ],
   },
   {
+    slug: 'agoda',
+    name: 'Agoda',
+    nameEn: 'Agoda',
+    tagline: '飯店、民宿、機加酒',
+    // 出站直接落到「優惠專區」而不是首頁：Agoda 的券就是在這頁領的。
+    // Agoda 自營聯盟（partners.agoda.com，5%）批下來後，affiliateUrl 填
+    // https://www.agoda.com/zh-tw/deals?cid=<我們的cid>——同一頁帶 cid，頁面自動切換。
+    officialUrl: 'https://www.agoda.com/zh-tw/deals',
+    admitadProgram: 'Agoda 自營聯盟 partners.agoda.com（5%）；不在 Admitad／Involve Asia',
+    affiliateUrl: '',
+    // 2026-09-21 在台灣 IP、清空 agoda.com cookie 後核對：優惠專區的「折扣碼 (2)」篩選器
+    // 點開只有「領取優惠券」按鈕，DOM/JSON 裡沒有任何碼字串；點按鈕直接新開
+    // https://www.agoda.com/?cid=1901774。所以 Agoda 沒有可輸入的公開碼，券是連結帶入的。
+    codes: [],
+    campaigns: [
+      {
+        title: '優惠券是「點連結領」，不是輸入碼',
+        detail: '很多整理站會給你一串 Agoda 折扣碼，但 Agoda 台灣站的優惠專區根本沒有可輸入的碼。實際流程是：進優惠專區 → 按「領取優惠券」→ 頁面帶著活動參數跳回 Agoda → 訂到標有「適用優惠券」的住宿時自動套用。要先登入 Agoda 帳號；能領到哪幾張依帳號與所在地區而異。核對當天專區有兩張日本住宿券（最高 4,000 円、最高 6,000 円滿 12,750 円），這類券幾天就換一輪，以專區當下顯示為準。',
+        period: '常態機制（2026-09-21 核對）',
+        source: 'https://www.agoda.com/zh-tw/deals',
+      },
+      {
+        title: '優惠專區常駐的幾類折扣',
+        detail: '當地特惠低至 75 折、國外旅遊優惠低至 7 折、Eco Deals 低至 85 折（每筆捐 1 美元給 WWF）、限時特惠價低至 15 折。這些是專區分類，實際折數看住宿頁標價；不需要碼。',
+        period: '常態（2026-09-21 核對時進行中）',
+        source: 'https://www.agoda.com/zh-tw/deals',
+      },
+      {
+        title: '登入才看得到的價：A咖會員價與 AgodaVIP',
+        detail: '專區頂部就寫「A咖登入」；部分住宿的會員價與 VIP 專案價只在登入後顯示。同一間房，登入前後的含稅價可能不同，比價前先登入。',
+        period: '常態',
+        source: 'https://www.agoda.com/zh-tw/deals',
+      },
+    ],
+  },
+  {
     slug: 'surfshark',
     name: 'Surfshark',
     nameEn: 'Surfshark',

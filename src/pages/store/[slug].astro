@@ -17,14 +17,21 @@ const initials = brand.nameEn.replace(/[^A-Za-z]/g, '').slice(0, 2).toUpperCase(
 // 组数我们拼不过就算了，但「逐組核對」是他们没有的——排第一那篇自己标的更新日是 2026-08-03。
 // 日期用 M/D 短式，标题在 SERP 上只有约 30 个全角字的空间。
 const shortDate = latest ? `${Number(latest.slice(5, 7))}/${Number(latest.slice(8, 10))}` : '';
+// 無碼但有活動的品牌（Agoda、CASETiFY）：搜「XX 優惠碼」的人以為有碼可貼，
+// 我們的價值恰恰是告訴他「沒有碼，但優惠是這樣拿的」——標題要把這件事說出來，
+// 不然只寫「目前沒有」，SERP 上就是個零點擊的死頁。
 const pageTitle = codes.length > 0
   ? `${brand.name}優惠碼｜${codes.length} 組，${shortDate} 逐組核對 - PromoCodeAsia`
-  : `${brand.name}優惠碼｜目前沒有可用的公開碼 - PromoCodeAsia`;
+  : brand.campaigns.length > 0
+    ? `${brand.name}優惠碼｜沒有公開碼，${brand.campaigns.length} 檔官方優惠這樣拿 - PromoCodeAsia`
+    : `${brand.name}優惠碼｜目前沒有可用的公開碼 - PromoCodeAsia`;
 const withExpiry = codes.filter((c) => c.expiresAt).length;
 const pageDesc = codes.length > 0
   ? `${brand.name}優惠碼 ${codes.length} 組，每組標明適用條件、${shortDate} 的核對日期與官方出處`
     + `${withExpiry > 0 ? `，其中 ${withExpiry} 組附官方失效日` : ''}。過了失效日自動下架，不留過期碼。`
-  : `我們目前查不到 ${brand.name} 可輸入的公開優惠碼，所以這頁直接寫明沒有，不放沒驗證過的碼充數。`;
+  : brand.campaigns.length > 0
+    ? `${brand.name} 目前沒有可輸入的公開優惠碼，但官方優惠是有的。這頁講清楚 ${brand.campaigns.length} 檔怎麼拿、要不要登入、有什麼條件，每檔附核對日期與官方出處。`
+    : `我們目前查不到 ${brand.name} 可輸入的公開優惠碼，所以這頁直接寫明沒有，不放沒驗證過的碼充數。`;
 // 出站链接：联盟批下来之前先用官方地址。
 // 为什么不等联盟批：读者看完码在这页是死路一条，没有任何下一步。
 // 等批准再补，中间这段时间「有多少人真想买」的数据就永远拿不到了。

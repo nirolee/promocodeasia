@@ -24,9 +24,9 @@ const groups = [
   },
   {
     title: '訂房平台（部分）',
-    why: 'Agoda、Booking.com 目前不在我們能接入的聯盟網路裡。',
-    brands: ['Agoda', 'Booking.com', '易遊網 ezTravel'],
-    tip: '可以先比對我們有收錄的 Klook、Trip.com、KKday——同一晚住宿在不同平台的含稅價常差不少。',
+    why: 'Booking.com 走的聯盟對新站有流量門檻，我們還沒過；易遊網不開放境外推廣。',
+    brands: ['Booking.com', '易遊網 ezTravel'],
+    tip: 'Agoda 我們已經單獨做了一頁（它沒有可輸入的碼，但優惠券怎麼領講清楚了），見 /store/agoda/。同一晚住宿在不同平台的含稅價常差不少，比完再訂。',
   },
 ];
 const total = groups.reduce((n, g) => n + g.brands.length, 0);
