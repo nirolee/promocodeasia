@@ -96,7 +96,11 @@ export const BRANDS: Brand[] = [
     tagline: '景點門票、交通票券、當地體驗',
     officialUrl: 'https://www.klook.com/zh-TW/',
     admitadProgram: 'Klook WW（1.60–8%）',
-    affiliateUrl: '',
+    // Admitad program 186872 于 2026-09-21 查得 status=active（7 个里唯一批下来的）。
+    // 这是 Admitad 的轮换追踪域，跳转链实测落到 klook.com/?aid=45636&aff_ext=…
+    // ⚠️ 站上这 30 组全是银行/支付码，按 Klook 合约一律不计佣（commissionable: 'no'）。
+    // 挂这条链接赚的是「点进去之后没用排除码」的那部分订单，不是这些码本身。
+    affiliateUrl: 'https://bjpql.com/g/uk7qqjwme41a1e4d44726ca26c9222/',
     codes: [
       {
         code: 'HUWNAN269509',
