@@ -120,8 +120,17 @@ export const BRANDS: Brand[] = [
     officialUrl: 'https://www.iherb.com/',
     admitadProgram: 'iHerb.com INT（0.80–4%）',
     affiliateUrl: '',
-    // iHerb 不發公開優惠碼：折扣直接掛在商品上、結帳自動套用，官方 /deals 頁沒有任何碼可輸入
-    codes: [],
+    // 注意：/deals 頁確實沒有碼（折扣掛在商品上自動套用），但**首頁橫幅有季節活動碼**。
+    // 2026-09-21 第一次只查 /deals 就誤判成「不發碼」，查首頁才發現 26MOON24。
+    codes: [
+      {
+        code: '26MOON24',
+        benefit: '中秋佳節好禮特惠 76 折',
+        restriction: '部分特殊商品不參與；以官方頁面標示的適用範圍為準',
+        verifiedAt: '2026-09-21',
+        source: 'https://tw.iherb.com/',
+      },
+    ],
     campaigns: [
       {
         title: '中秋佳節好禮特惠 76 折酬賓',
@@ -134,6 +143,18 @@ export const BRANDS: Brand[] = [
         detail: '台灣地區常態門檻，不需要輸入優惠碼。',
         period: '常態',
         source: 'https://tw.iherb.com/deals',
+      },
+      {
+        title: '定期購訂單最多省 10%',
+        detail: '把常買的商品設成定期購，折扣自動套用，不需要輸入優惠碼。買保健品長期回購的話，這個比任何一次性折扣碼都划算。',
+        period: '常態',
+        source: 'https://tw.iherb.com/',
+      },
+      {
+        title: '新客首購優惠（需訂閱電子報領取）',
+        detail: '首頁彈窗輸入 Email 可領取新客折扣，僅限新客戶、部分特殊商品不參與。',
+        period: '常態',
+        source: 'https://tw.iherb.com/',
       },
     ],
   },
@@ -223,6 +244,18 @@ export const BRANDS: Brand[] = [
     officialUrl: 'https://surfshark.com/',
     admitadProgram: 'Surfshark WW（US$24.50–31.50／單）',
     affiliateUrl: '',
+    codes: [],
+    campaigns: [],
+  },
+  {
+    slug: 'nordvpn',
+    name: 'NordVPN',
+    nameEn: 'NordVPN',
+    tagline: 'VPN 訂閱',
+    officialUrl: 'https://nordvpn.com/zh-tw/',
+    admitadProgram: 'NordVPN WW（40%）',
+    affiliateUrl: '',
+    // 2026-09-21 查官方首頁無可輸入的碼；折扣走方案頁的限時價，不是優惠碼
     codes: [],
     campaigns: [],
   },
