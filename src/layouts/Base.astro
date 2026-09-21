@@ -1,8 +1,14 @@
 ---
 import '../styles/global.css';
 
-export interface Props { title: string; description: string; canonical?: string }
-const { title, description, canonical } = Astro.props;
+export interface Props {
+  title: string;
+  description: string;
+  canonical?: string;
+  /** 空壳页（既没码也没活动）传 true：输出 noindex,follow，不参与排名但仍传递内链。 */
+  noindex?: boolean;
+}
+const { title, description, canonical, noindex = false } = Astro.props;
 const url = canonical ?? new URL(Astro.url.pathname, 'https://promocodeasia.com').toString();
 ---
 <!DOCTYPE html>
@@ -13,6 +19,7 @@ const url = canonical ?? new URL(Astro.url.pathname, 'https://promocodeasia.com'
   <title>{title}</title>
   <meta name="description" content={description} />
   <link rel="canonical" href={url} />
+  {noindex && <meta name="robots" content="noindex,follow" />}
   <meta property="og:type" content="website" />
   <meta property="og:title" content={title} />
   <meta property="og:description" content={description} />
@@ -54,10 +61,47 @@ const url = canonical ?? new URL(Astro.url.pathname, 'https://promocodeasia.com'
   </footer>
 
   <script>
+    /**
+     * 三个事件，回答三个不同的问题（别混成一个「点击」）：
+     *   copy_code        —— 有多少人真的打算去用这组码
+     *   merchant_outbound —— 有多少人真的去了商家（带 link_type 区分联盟链接/官方链接）
+     *   source_open      —— 有多少人去查了出处。这是查证兴趣，**不是购买意图**，
+     *                        不能和上面两个加在一起当转化。
+     *
+     * commissionable 一起上报：Klook 的银行码注定零佣金，把它算进收入预期
+     * 会让整个漏斗看起来比实际赚钱。'unknown' 表示条款没查证过，同样不能当收入。
+     */
+    const ev = (name: string, params: Record<string, unknown>) => {
+      const g = (window as unknown as { gtag?: (...a: unknown[]) => void }).gtag;
+      if (typeof g === 'function') g('event', name, params);
+    };
+
+    document.addEventListener('click', (e) => {
+      const t = e.target as HTMLElement;
+
+      const out = t.closest<HTMLAnchorElement>('.js-merchant');
+      if (out) {
+        ev('merchant_outbound', {
+          brand: out.dataset.brand || '',
+          link_type: out.dataset.linkType || 'official',
+        });
+      }
+
+      const src = t.closest<HTMLAnchorElement>('.js-source');
+      if (src) {
+        ev('source_open', { brand: src.dataset.brand || '', code_id: src.dataset.codeId || '' });
+      }
+    });
+
     // 复制码：优先用 Clipboard API，不可用时回退到 execCommand（http 或旧浏览器）
     document.addEventListener('click', (e) => {
       const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('.copybtn');
       if (!btn) return;
+      ev('copy_code', {
+        brand: btn.dataset.brand || '',
+        code_id: btn.dataset.code || '',
+        commissionable: btn.dataset.commissionable || 'unknown',
+      });
       const code = btn.dataset.code || '';
       const done = () => {
         const old = btn.textContent;

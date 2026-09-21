@@ -48,3 +48,17 @@ export function liveCodes(b: Brand, today: string = todayTW()): Code[] {
 export function expiredCodes(b: Brand, today: string = todayTW()): Code[] {
   return b.codes.filter((c) => isExpired(c, today));
 }
+
+/**
+ * 这个品牌页有没有实质内容 —— 有可用的码，或有进行中的活动。
+ *
+ * 为什么需要它（2026-09-21）：7 个品牌页里有 4 个（Trip.com / Surfshark / NordVPN /
+ * CASETiFY）既没有码也没有活动，正文只剩「目前沒有公開碼」加一句品牌介绍。
+ * 这种页诚实但不值得参与排名：让它进索引，等于用站点权重去养一批空壳。
+ * 所以两处共用这个判据 —— 页面据此输出 noindex，sitemap 据此把它排除。
+ *
+ * 注意用的是 liveCodes 而不是 brand.codes：码可能全过期了，那也算空。
+ */
+export function hasSubstance(brand: Brand, today: string = todayTW()): boolean {
+  return liveCodes(brand, today).length > 0 || brand.campaigns.length > 0;
+}

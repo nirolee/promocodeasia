@@ -39,6 +39,15 @@ export type Code = {
   source: string;
   /** 官方标注的失效日，未知则省略 */
   expiresAt?: string;
+  /**
+   * 这组码能不能拿到佣金。出站埋点会带上它，目的是不要把注定零佣金的点击算进收入预期。
+   *
+   * 'no' 必须有依据 —— 目前只有 Klook：其联盟条款明写「银行/支付/会员合作码不计佣」，
+   * 且 Involve Asia 的费率表上有一行「Unsuitable promo code redeemed —— 0%」，
+   * 意思是读者用了这类码，整单佣金归零。
+   * **没查证过条款的一律 'unknown'，不要凭「看起来像银行码」就标 'no'。**
+   */
+  commissionable?: 'yes' | 'no' | 'unknown';
 };
 
 export type Brand = {
@@ -75,6 +84,7 @@ export const BRANDS: Brand[] = [
         restriction: '限中國信託 LINE Pay 卡；每帳號全年限用 10 次，每筆最高加碼 1,000 點',
         verifiedAt: '2026-09-20',
         source: 'https://www.klook.com/zh-TW/blog/klook-discount-collection/',
+        commissionable: 'no',
       },
       {
         code: 'VISA269209',
@@ -82,6 +92,7 @@ export const BRANDS: Brand[] = [
         restriction: '限 Visa 卡；每月每帳號限用 1 次，需先點擊活動連結',
         verifiedAt: '2026-09-20',
         source: 'https://www.klook.com/zh-TW/blog/klook-discount-collection/',
+        commissionable: 'no',
       },
       {
         code: 'VSKB269309',
@@ -89,6 +100,7 @@ export const BRANDS: Brand[] = [
         restriction: '限 Visa 新光卡；每月每帳號限用 1 次',
         verifiedAt: '2026-09-20',
         source: 'https://www.klook.com/zh-TW/blog/klook-discount-collection/',
+        commissionable: 'no',
       },
       {
         code: 'HUWNAN269509',
@@ -96,6 +108,7 @@ export const BRANDS: Brand[] = [
         restriction: '限華南銀行卡；每月每帳號限用 1 次',
         verifiedAt: '2026-09-20',
         source: 'https://www.klook.com/zh-TW/blog/klook-discount-collection/',
+        commissionable: 'no',
       },
       {
         code: 'ESUN269509',
@@ -103,6 +116,7 @@ export const BRANDS: Brand[] = [
         restriction: '限玉山銀行卡；每月每帳號限用 1 次',
         verifiedAt: '2026-09-20',
         source: 'https://www.klook.com/zh-TW/blog/klook-discount-collection/',
+        commissionable: 'no',
       },
       {
         code: 'CUBE269509',
@@ -110,6 +124,7 @@ export const BRANDS: Brand[] = [
         restriction: '限國泰世華銀行卡；每月每帳號限用 1 次',
         verifiedAt: '2026-09-20',
         source: 'https://www.klook.com/zh-TW/blog/klook-discount-collection/',
+        commissionable: 'no',
       },
     ],
     campaigns: [
