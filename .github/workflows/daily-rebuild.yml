@@ -1,0 +1,46 @@
+# 每日重建：让「已过期的码自动从页面消失」这个承诺真的成立。
+#
+# 为什么需要它：过期处理本身早就有——src/lib/codes.ts 在构建时把过期码从 HTML 摘掉，
+# scripts/lint-codes.mjs 会警告快到期和太久没复核的码。但这个站是静态构建，
+# 没有任何东西在到期日触发重建；一条 9/22 到期的码，会一直挂在最后一次构建的 HTML 里，
+# 直到有人手动 push。"只放核对过的码"是这个站唯一的护城河，靠人记得重建撑不住。
+#
+# 做法：定时跑一遍 lint（把警告打进 Actions 日志，让"该去复核了"有地方看见），
+# 然后打 Cloudflare Pages 的 deploy hook 触发一次生产构建。构建逻辑不在这里，
+# 还是 CF Pages 那套；这里只负责"每天按一次按钮"。
+#
+# 两个时间点：16:30 UTC（= 00:30 台北/上海）和 00:30 UTC。lint 和渲染层按 Asia/Shanghai
+# 算"今天"，第一个点刚过本地午夜就把当天到期的码摘掉；第二个点兜底 UTC 侧。重建幂等。
+name: daily-rebuild
+on:
+  schedule:
+    - cron: '30 16 * * *'
+    - cron: '30 0 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci --ignore-scripts
+      # lint 对「过期/快到期/太久没复核」只警告不报错（设计如此：一条码过期不该堵死整站部署）；
+      # 对格式错、缺出处这类硬错误 exit 1——那时候不触发重建，线上保持上一版。
+      - name: lint codes (warnings surface here)
+        run: |
+          node scripts/lint-codes.mjs 2>&1 | tee lint.log
+          { echo '### 券数据检查'; echo '```'; cat lint.log; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+      - name: trigger Cloudflare Pages build
+        env:
+          HOOK: ${{ secrets.CF_PAGES_DEPLOY_HOOK }}
+        run: |
+          test -n "$HOOK" || { echo "CF_PAGES_DEPLOY_HOOK secret 未设置"; exit 1; }
+          curl -fsS -X POST "$HOOK" -o hook.json
+          echo "deploy hook 响应："; cat hook.json; echo
