@@ -29,8 +29,11 @@ const pageTitle = codes.length > 0
     ? `${brand.name}${term}｜沒有公開碼，${brand.campaigns.length} 檔官方優惠這樣拿 - PromoCodeAsia`
     : `${brand.name}${term}｜目前沒有可用的公開碼 - PromoCodeAsia`;
 const withExpiry = codes.filter((c) => c.expiresAt).length;
+// 「kkday 折扣碼 9月」「klook 優惠碼 2026 9月」是每个品牌都有的联想词（2026-09-23 Google zh-TW 联想）。
+// 标题已到 SERP 长度上限，月份放 description；用台北当天的年月，随构建自动走。
+const ymLabel = `${today.slice(0, 4)} 年 ${Number(today.slice(5, 7))} 月`;
 const pageDesc = codes.length > 0
-  ? `${brand.name}${term}（${alt}）${codes.length} 組，每組標明適用條件、${shortDate} 的核對日期與官方出處`
+  ? `${ymLabel}最新 ${brand.name}${term}（${alt}）${codes.length} 組，每組標明適用條件、${shortDate} 的核對日期與官方出處`
     + `${withExpiry > 0 ? `，其中 ${withExpiry} 組附官方失效日` : ''}。過了失效日自動下架，不留過期碼。`
   : brand.campaigns.length > 0
     ? `${brand.name} 目前沒有可輸入的公開優惠碼，但官方優惠是有的。這頁講清楚 ${brand.campaigns.length} 檔怎麼拿、要不要登入、有什麼條件，每檔附核對日期與官方出處。`
@@ -207,11 +210,11 @@ const showCardIndex = cardGroups.length >= 8;
     {isAffiliate && <span class="kv" style="display:block;margin-top:6px">這是合作推廣連結；是否使用不影響你所付的價格。</span>}
   </p>
 
-  <h2>使用前先確認這三件事</h2>
+  <h2>{brand.name}{term}怎麼用、不能用怎麼辦</h2>
   <ul class="steps">
-    <li>你的付款方式是否符合「適用條件」——台灣的{term}絕大多數綁定特定發卡銀行。</li>
-    <li>多數銀行碼需要<b>先點進品牌的活動頁</b>才會生效，直接在結帳頁貼上可能無效。</li>
-    <li>每個帳號通常每月限用一次，且數量有限、以結帳順序為準。</li>
+    <li><b>怎麼用</b>：結帳頁找「輸入{term}」欄位貼上；多數銀行碼要<b>先點進品牌的活動頁</b>再結帳，直接在結帳頁貼上會顯示無效。</li>
+    <li><b>顯示不能用，先看這四項</b>：付款卡不符合「適用條件」（台灣的{term}絕大多數綁定特定發卡銀行）；沒有從活動頁進入；這個帳號本月已經用過（多數每月限用一次）；商品在排除清單裡（門票類、指定活動常被排除）。</li>
+    <li>碼有數量上限、以結帳順序為準——月初和大促第一天最容易搶完；到期的碼這頁會自動下架，還看得到就是還沒過期。</li>
   </ul>
   <p class="kv">這頁說的{term}，也就是常見說法裡的{alt}——同一回事，結帳時輸入的那串字。</p>
 
