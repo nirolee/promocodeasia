@@ -11,7 +11,7 @@
 那是跨站授权按钮，CDP 点不动（2026-09-22 实测真鼠标 + JS click 都失败）。
 
 结构（2026-09-22 抓的，改版了就重新 probe）：
-  左栏 aria-label=创建 → 弹出编辑器；编辑器 div[role=textbox][contenteditable]（Lexical）；发布按钮文字「发布」。
+  左栏 aria-label=创建（2026-09-24 改叫「新建帖子」，正则兼容）→ 弹出编辑器；编辑器 div[role=textbox][contenteditable]（Lexical）；发布按钮文字「发布」。
   Lexical 不认 value setter，必须 focus 后用 CDP Input.insertText 逐段塞（换行用 Input.dispatchKeyEvent Enter）。
 """
 import argparse, json, os, sys, time, urllib.request
@@ -54,14 +54,22 @@ def center(t, js):
     return r
 
 def post(text, dry=False):
-    d = http("/json/new?https://www.threads.com/", method="PUT"); tid = d["id"]; t = Tab(d["webSocketDebuggerUrl"])
+    # 从自己的主页进：首页 / 有时渲染成空白（2026-09-24 实测 innerText 为空），主页稳定得多
+    d = http("/json/new?https://www.threads.com/@%s" % HANDLE, method="PUT"); tid = d["id"]; t = Tab(d["webSocketDebuggerUrl"])
     try:
-        time.sleep(10)
+        for _ in range(6):
+            time.sleep(5)
+            if (t.ev("(document.body.innerText||'').length") or 0) > 100: break
         if t.ev("!!document.querySelector('[role=dialog]') && /Instagram 登录/.test(document.body.innerText)"):
             return {"ok": False, "why": "Threads 未登录：让用户在家里 Chrome 窗口点「用 Instagram 登录」"}
-        p = center(t, "(()=>{const e=[...document.querySelectorAll('[aria-label]')].find(x=>x.getAttribute('aria-label').trim()==='创建'); return e? (e.closest('a,button,div[role=button]')||e):null;})()")
-        if not p: return {"ok": False, "why": "找不到「创建」按钮"}
-        t.click(p["x"], p["y"]); time.sleep(4)
+        p = center(t, "(()=>{const e=[...document.querySelectorAll('[aria-label]')].find(x=>/^(创建|新建帖子|建立|發佈|Create)$/.test(x.getAttribute('aria-label').trim())); return e? (e.closest('a,button,div[role=button]')||e):null;})()")
+        if p:
+            t.click(p["x"], p["y"]); time.sleep(3)
+        # 2026-09-24：aria-label=新建帖子 的元素尺寸是 0（真按钮的可见壳在别处），真鼠标点不到；JS click 能拉起编辑器
+        if not t.ev("!!document.querySelector('div[role=textbox][contenteditable=true]')"):
+            hit = t.ev("(()=>{const e=[...document.querySelectorAll('[aria-label]')].find(x=>/^(创建|新建帖子|建立|發佈|Create)$/.test(x.getAttribute('aria-label').trim())); if(!e) return false; (e.closest('a,button,div[role=button]')||e).click(); return true;})()")
+            if not hit: return {"ok": False, "why": "找不到「创建／新建帖子」按钮"}
+            time.sleep(3)
         box = center(t, "[...document.querySelectorAll('div[role=textbox][contenteditable=true]')].find(e=>e.getBoundingClientRect().width>0)")
         if not box: return {"ok": False, "why": "编辑器没出现"}
         t.click(box["x"], box["y"]); time.sleep(0.6)
@@ -106,15 +114,28 @@ def main():
     ap.add_argument("--text"); ap.add_argument("--from-drafts", action="store_true"); ap.add_argument("--dry-run", action="store_true")
     a = ap.parse_args()
     texts = []
+    # 已发记录：每行 "YYYY-MM-DD kind"。同一天同一栏目只发一次——
+    # 手动发过一条之后 cron 再跑，或者 cron 跑到一半失败重跑，都不能把同一条再发一遍。
+    POSTED = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".threads-posted")
+    done = set()
+    if os.path.exists(POSTED):
+        done = {ln.strip() for ln in open(POSTED, encoding="utf-8") if ln.strip()}
+    items = []   # (text, key)
     if a.from_drafts:
         data = json.load(sys.stdin)
-        texts = [d["text"] for d in data.get("drafts", []) if not d["text"].startswith("（")]   # 括号开头的是提示，不是帖子
-    elif a.text: texts = [a.text]
-    if not texts: sys.exit("没有要发的内容")
+        for d in data.get("drafts", []):
+            if d["text"].startswith("（"): continue   # 括号开头的是提示，不是帖子
+            key = "%s %s" % (data.get("date", ""), d.get("kind", ""))
+            if key in done: print("⏭ 今天这栏已发过，跳过：" + key); continue
+            items.append((d["text"], key))
+    elif a.text: items = [(a.text, None)]
+    if not items: sys.exit("没有要发的内容")
     rc = 0
-    for tx in texts:
+    for tx, key in items:
         r = post(tx, a.dry_run)
         print(("✅ " if r.get("ok") else "❌ ") + json.dumps(r, ensure_ascii=False))
+        if r.get("ok") and key and not a.dry_run:
+            with open(POSTED, "a", encoding="utf-8") as f: f.write(key + "\n")
         if not r.get("ok"): rc = 1
         time.sleep(3)
     sys.exit(rc)

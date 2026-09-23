@@ -2,3 +2,5 @@ node_modules
 dist/
 .astro/
 .secrets/
+scripts/threads.log
+scripts/.threads-posted

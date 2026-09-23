@@ -9,6 +9,7 @@
  *   today  每天：今天（星期 X）能用的限定碼
  *   week   每週一：本週要失效的碼（含月底換版的銀行碼）
  *   month  每月 1–2 號：銀行碼換版，新一輪核完
+ *   fun    每週一三五：一條不帶碼的閒聊帖（常青，見 FUN）
  * 「更正」类帖子不自动生成——那是人的事，也是最不能套模板的东西。
  *
  * 口味（用户定的，见 memory feedback_social_copy_tone）：短、口语、一条一件事，
@@ -17,7 +18,7 @@
  *
  * 用法：
  *   npx tsx scripts/threads-drafts.ts                 # 按今天（台北）该发什么，输出适用的栏目
- *   npx tsx scripts/threads-drafts.ts --which week    # 强制出某一栏（today|week|month|all）
+ *   npx tsx scripts/threads-drafts.ts --which week    # 强制出某一栏（today|week|month|fun|all）
  *   npx tsx scripts/threads-drafts.ts --date 2026-10-01 --which all
  *   npx tsx scripts/threads-drafts.ts --json          # 给代发脚本用
  */
@@ -39,7 +40,36 @@ const wd = weekdayTW(today);
 const dom = Number(today.slice(8, 10));
 const ym = today.slice(0, 7);
 
-type Draft = { kind: 'today' | 'week' | 'month'; text: string; codes: string[] };
+type Draft = { kind: 'today' | 'week' | 'month' | 'fun'; text: string; codes: string[] };
+
+/**
+ * fun 栏目：不带码、不带链接的闲聊帖，为了让人愿意回、愿意转（用户 2026-09-24 要求「偶尔发点容易吸粉传播的娱乐内容」）。
+ * 全是常青内容——没有日期、没有具体码，所以不存在「拿到旧内容」的问题，隔多久发都不会错。
+ * 口味：口语、自嘲、一条一件事、结尾抛个问题；不写金句不排比。新加的往后面放，别打乱轮换顺序。
+ * 轮换：按「距 2026-01-01 的天数 % 池子长度」取，同一天重跑拿到的是同一条，不会一天发两条不同的。
+ */
+const FUN: string[] = [
+  '優惠碼不能用的四個階段：先懷疑自己打錯、再懷疑手機、再懷疑銀行、最後才懷疑碼過期了。\n順序完全反過來才對。你上次卡在哪一步？',
+  '買 eSIM 想套「滿 $3,000 折 $450」的碼，結帳一看總價 $189。\n門檻不是給你的，是給訂機票的人的。',
+  '銀行碼每月換版這件事，大概是全台灣最準時的東西。\n房租都沒它準。',
+  '出國前一天才想起要查優惠碼的請舉手。\n我先舉。',
+  '有些整理頁寫「每週更新」，點進去上次更新是兩個月前。\n「每週」大概是指每週想起來一次。',
+  '部落客專屬碼是什麼：你打上去，分潤進他口袋，你拿到的折扣跟公開碼一模一樣。\n不是不能用，是別以為它比較多。',
+  '「每帳號每月限用一次」——所以多數人先把碼用在最便宜那一單，等要買大單的時候發現這個月用過了。\n買之前先想清楚哪一單最貴。',
+  '你被哪一句話騙過：「限時」「最後一天」「僅剩 3 組」？\n我三個都有。',
+  '湊門檻學：為了折 $200 多買 $800 的東西，然後覺得自己賺了。\n這門課我修了十年還沒過。',
+  '週一港澳日、週三日本日、週四首爾日。\n我嚴重懷疑 KKday 的星期碼就是照排班表排的。',
+  '優惠碼界的都市傳說：「我朋友的朋友用某個碼買到半價機票」。\n那個碼永遠沒人拿得出來。',
+  '最尷尬的時刻：結帳頁輸碼，跳出「不符合資格」，後面排隊的人開始不耐煩。\n後面排隊的人是你自己。',
+  '出國網卡你選哪種？A eSIM、B 實體卡、C 開漫遊、D 到當地再說。\n留言講一下為什麼，我在收集人類迷惑行為。',
+  '一個月核對三十幾組銀行碼的心得：華南、聯邦、第一、玉山、星展、彰化……\n唸到後面像在點名。',
+];
+const FUN_DAYS = [0, 2, 4]; // 週一、三、五各發一條，別天天發——閒聊帖多了帳號就不像工具了
+
+function draftFun(): Draft {
+  const idx = Math.round((Date.parse(today) - Date.parse('2026-01-01')) / 86400000) % FUN.length;
+  return { kind: 'fun', text: FUN[(idx + FUN.length) % FUN.length], codes: [] };
+}
 const drafts: Draft[] = [];
 
 /** 「滿 $1,000 享 94 折」→ 去掉多余空格，保留读者能一眼看懂的写法 */
@@ -134,10 +164,12 @@ function draftMonth(): Draft | null {
 const wantToday = which === 'all' || which === 'today' || which === 'auto';
 const wantWeek = which === 'all' || which === 'week' || (which === 'auto' && wd === 0);
 const wantMonth = which === 'all' || which === 'month' || (which === 'auto' && (dom === 1 || dom === 2));
+const wantFun = which === 'all' || which === 'fun' || (which === 'auto' && FUN_DAYS.includes(wd));
 
 if (wantToday) { const d = draftToday(); if (d) drafts.push(d); }
 if (wantWeek) { const d = draftWeek(); if (d) drafts.push(d); }
 if (wantMonth) { const d = draftMonth(); if (d) drafts.push(d); }
+if (wantFun) drafts.push(draftFun());
 
 for (const d of drafts) {
   if (d.text.length > MAX) d.text = d.text.slice(0, MAX - 1) + '…';
