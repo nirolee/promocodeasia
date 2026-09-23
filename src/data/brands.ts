@@ -432,6 +432,8 @@ export const BRANDS: Brand[] = [
     slug: 'iherb',
     name: 'iHerb',
     nameEn: 'iHerb',
+    // 2026-09-23 Bing TW 8/1–9/20：iherb 折扣碼 266 vs 優惠碼 17，主词该是折扣碼
+    term: '折扣碼',
     tagline: '保健食品、維他命、美妝海淘',
     officialUrl: 'https://www.iherb.com/',
     admitadProgram: 'iHerb.com INT（0.80–4%）',
@@ -827,6 +829,8 @@ export const BRANDS: Brand[] = [
     slug: 'agoda',
     name: 'Agoda',
     nameEn: 'Agoda',
+    // 2026-09-23 Bing TW 8/1–9/20：agoda 折扣碼 337 vs 優惠碼 38，主词该是折扣碼
+    term: '折扣碼',
     tagline: '飯店、民宿、機加酒',
     // 出站直接落到「優惠專區」而不是首頁：Agoda 的券就是在這頁領的。
     // Agoda 自營聯盟（partners.agoda.com，5%）批下來後，affiliateUrl 填
