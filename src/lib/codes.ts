@@ -108,3 +108,16 @@ export function versionStale(c: Code, today: string = todayTW()): boolean {
 export function versionLabel(v: string): string {
   return `${Number(v.slice(5, 7))} 月`;
 }
+
+/**
+ * 這組碼是不是「全站／海外全商品」類 —— 也就是沒綁定商品類別、理論上連 eSIM 這種低單價的數位商品都能用的碼。
+ *
+ * 為什麼用 benefit 文字判斷而不加欄位：Klook、KKday 官方頁本來就是用「海外全商品」「全站商品」「全球商品」
+ * 這些字眼標範圍的，我們照抄進 benefit；再加一個欄位等於同一件事寫兩遍，月底換版時還得同步兩處。
+ * 排除項是官方寫明只限某類商品的（飯店、鐵路、行程體驗），那些名字裡也帶「全球」，不能只看前綴。
+ */
+export function isSitewide(c: Code): boolean {
+  const scope = /全站|海外全商品|全海外商品|海外商品|全球商品/.test(c.benefit);
+  const limited = /飯店|住宿|鐵路|新幹線|高鐵|機加酒|行程|體驗|交通|租車|機場接送/.test(c.benefit + (c.category ?? ''));
+  return scope && !limited;
+}

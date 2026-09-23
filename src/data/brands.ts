@@ -418,6 +418,18 @@ export const BRANDS: Brand[] = [
         source: 'https://www.klook.com/zh-TW/blog/klook-discount-collection/',
         commissionable: 'no',
       },
+      {
+        // 這組不在折扣總覽頁，而是掛在 Klook eSIM 專區（/zh-TW/esim/）的「優惠碼」區塊。
+        // 官方在那裡寫的是「適用全站商品」，門檻 TWD 7,924 —— 對客單價 NT$11 起的 eSIM 幾乎達不到，
+        // 頁面上要把這點講清楚，別讓讀者以為買一張 eSIM 就能用。
+        code: 'MCWORLD5OFF',
+        benefit: '全站商品 95 折（Klook eSIM 專區掛的碼）',
+        restriction: '限 Mastercard 萬事達卡；低消 TWD 7,924；於 Klook eSIM 專區「優惠碼」區塊點「馬上領」領取後於付款頁輸入',
+        card: 'Mastercard 萬事達指定卡',
+        verifiedAt: '2026-09-23',
+        source: 'https://www.klook.com/zh-TW/esim/',
+        commissionable: 'no',
+      },
     ],
     campaigns: [
       {

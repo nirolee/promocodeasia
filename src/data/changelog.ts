@@ -25,6 +25,15 @@ export type Change = {
 
 export const CHANGES: Change[] = [
   {
+    date: '2026-09-23',
+    summary: '新增「日本 eSIM 折扣碼」主題頁；Klook 補上 eSIM 專區掛的 Mastercard 碼。',
+    details: [
+      '主題頁把 Klook、KKday 裡寫「全站／海外全商品」的碼挑出來，標明各自的門檻——eSIM 客單價低，滿額碼多半碰不到。',
+      'Klook eSIM 專區（/zh-TW/esim/）的「優惠碼」區塊掛了 MCWORLD5OFF（Mastercard 全站 95 折，低消 TWD 7,924），折扣總覽頁沒有這組，補進 Klook 頁。',
+      'DJB 官網查過：沒有公開折扣碼，只有會員 25% 折扣與早鳥折扣，主題頁照實寫。',
+    ],
+  },
+  {
     date: '2026-09-22',
     summary: '新增 Agoda 頁；CASETiFY 補上 3 檔官方活動；Klook、CASETiFY 出站連結改為合作連結。',
     details: [

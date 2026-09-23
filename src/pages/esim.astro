@@ -1,0 +1,253 @@
+---
+/**
+ * 主題頁：日本 eSIM 折扣碼。
+ *
+ * 為什麼要有這頁（2026-09-23）：搜尋聯想詞裡「klook 優惠碼 esim」「kkday 折扣碼 esim」「djb esim 折扣碼」
+ * 是一整簇，但三家品牌頁各自只列自己的碼，讀者要自己去猜哪組能用在 eSIM 上、門檻夠不夠。
+ * 這頁只做一件事：把「全站／海外全商品」類的碼挑出來，按門檻排，並把 DJB 沒有公開碼這件事講清楚。
+ *
+ * 碼不在這裡另存一份 —— 全部從 brands.ts 算出來，品牌頁下架的碼這裡同時消失。
+ */
+import Base from '../layouts/Base.astro';
+import { BRANDS } from '../data/brands';
+import type { Brand, Code } from '../data/brands';
+import {
+  liveCodes, todayTW, daysUntil, daysSince, isStale, isSitewide,
+  versionEnd, versionStale, versionLabel, weekdayTW, STALE_AFTER_DAYS,
+} from '../lib/codes';
+
+const today = todayTW();
+const wd = weekdayTW(today);
+const WD_NAMES = ['一', '二', '三', '四', '五', '六', '日'];
+const ymLabel = `${today.slice(0, 4)} 年 ${Number(today.slice(5, 7))} 月`;
+
+const klook = BRANDS.find((b) => b.slug === 'klook')!;
+const kkday = BRANDS.find((b) => b.slug === 'kkday')!;
+
+// 有沒有滿額／低消門檻。eSIM 一張多半幾百塊，這是讀者最需要先看到的一個字。
+const hasMin = (c: Code) => /滿|低消/.test(c.benefit + c.restriction);
+// 無門檻的排前面；同組內維持 brands.ts 的原順序
+const byThreshold = (arr: Code[]) => [...arr].sort((a, b) => Number(hasMin(a)) - Number(hasMin(b)));
+
+// Klook：eSIM 專區直接掛的碼（source 是 /esim/ 頁）單獨一節；其餘挑「全站／海外全商品」類
+const klookLive = liveCodes(klook, today);
+const klookZone = klookLive.filter((c) => c.source.includes('/esim/'));
+const klookSitewide = byThreshold(klookLive.filter((c) => !c.source.includes('/esim/') && isSitewide(c)));
+
+// KKday：沒有 eSIM 專屬碼。挑「全球商品」類，以及寫「日本」但沒限定行程／鐵路的
+const kkLive = liveCodes(kkday, today);
+const kkSitewide = byThreshold(kkLive.filter(isSitewide));
+const kkJapan = kkLive.filter((c) => !isSitewide(c) && /日本/.test(c.benefit + (c.category ?? '')) && !/鐵路|機加酒|行程|體驗|包車|租車/.test(c.benefit + (c.category ?? '')));
+
+const total = klookZone.length + klookSitewide.length + kkSitewide.length + kkJapan.length;
+const allDates = [...klookZone, ...klookSitewide, ...kkSitewide, ...kkJapan].map((c) => c.verifiedAt).sort();
+const latest = allDates.at(-1);
+const shortDate = latest ? `${Number(latest.slice(5, 7))}/${Number(latest.slice(8, 10))}` : '';
+
+// 出站連結：Klook 有合作連結就走合作連結並帶目標頁（Admitad 深連結用 ulp 參數），沒有就直連官方
+const KLOOK_ESIM = 'https://www.klook.com/zh-TW/esim/';
+const klookEsimHref = klook.affiliateUrl ? `${klook.affiliateUrl}?ulp=${encodeURIComponent(KLOOK_ESIM)}` : KLOOK_ESIM;
+const klookLinkType = klook.affiliateUrl ? 'affiliate' : 'official';
+const DJB_JP = 'https://en.djbcard.com/product/japan-esim-test-series/?djb-lang=zh_TW';
+
+const pageTitle = `日本 eSIM 折扣碼｜Klook、KKday、DJB 哪些碼能用，${shortDate} 逐組核對 - PromoCodeAsia`;
+const desc = `${ymLabel}最新日本 eSIM 折扣碼（優惠碼）：Klook eSIM 專區掛的碼、Klook／KKday 能用在 eSIM 上的全站碼各有什麼門檻，以及 DJB 為什麼查不到公開碼。每組標示核對日期與官方出處。`;
+
+/** 一張碼卡要顯示的東西，兩個品牌共用同一種寫法 */
+const card = (b: Brand, c: Code) => ({ b, c, min: hasMin(c) });
+---
+<Base
+  title={pageTitle}
+  description={desc}
+  breadcrumb={[{ name: '首頁', url: '/' }, { name: '日本 eSIM 折扣碼', url: '/esim/' }]}>
+  <h1>日本 eSIM 折扣碼：Klook、KKday、DJB 逐家核對</h1>
+  <p class="lede">
+    {total > 0
+      ? <span class="pill pill-ok">✓ {total} 組能用在 eSIM 上的碼・最後核對 {latest}</span>
+      : <span class="pill pill-none">目前沒有能用在 eSIM 上的已核對碼</span>}
+  </p>
+  <p class="lede">
+    三家賣日本 eSIM 的，只有 Klook 在 eSIM 專區真的掛了碼。其他能用的是各家寫「全站／海外全商品」的銀行碼——
+    <b>但 eSIM 一張多半幾百塊，滿 $3,000、$5,000 的碼根本碰不到門檻</b>。這頁按「有沒有門檻」排，先看無門檻的。
+  </p>
+
+  <div class="trust">
+    <strong>先講結論（{today}）</strong>
+    <p><b>Klook</b>：eSIM 專區掛了 {klookZone.length} 組；另有 {klookSitewide.length} 組「海外全商品／全站」銀行碼理論上也適用，其中 {klookSitewide.filter((c) => !hasMin(c)).length} 組無門檻。</p>
+    <p><b>KKday</b>：沒有 eSIM 專屬碼。{kkSitewide.length} 組「全球商品」碼門檻都在 $3,000 以上；最接近的是{kkJapan.map((c) => `${c.code}（${c.benefit}）`).join('、') || '——'}，官方寫的是「日本商品」，沒列排除項，但我們沒實測 eSIM 能不能過。</p>
+    <p><b>DJB</b>：官網沒有公開折扣碼。只有註冊會員 25% 折扣，和早鳥折扣（使用日在 180 天後 9 折、240 天後 8 折）。搜尋結果裡的「DJB 折扣碼」多半是部落客專屬碼，不在官方頁上，我們不收。</p>
+  </div>
+
+  <h2>Klook eSIM 專區掛的碼</h2>
+  <p class="kv">
+    Klook 在 <a class="js-merchant" data-brand="klook" data-link-type={klookLinkType} href={klookEsimHref} rel="nofollow sponsored noopener" target="_blank">eSIM 專區</a>
+    有一個「優惠碼」區塊，點「查看全部」看到的就是這些。專區標的日本 eSIM 從 NT$11 起（Softbank／DOCOMO）。
+  </p>
+  {klookZone.length === 0 ? (
+    <div class="empty"><strong>{today} 核對時，Klook eSIM 專區沒有掛任何碼。</strong><p>下面「全站」類的銀行碼仍可試。</p></div>
+  ) : klookZone.map((c) => card(klook, c)).map(({ b, c, min }) => (
+    <div class="codecard" data-expires={c.expiresAt ?? ''} data-verified={c.verifiedAt} data-version-end={versionEnd(c) ?? ''} data-version-label={c.officialVersion ? versionLabel(c.officialVersion) : ''}>
+      <div class="benefit">{c.benefit}　{min ? <span class="pill pill-warn">有門檻</span> : <span class="pill pill-ok">無門檻</span>}</div>
+      <div class="codeline">
+        <div class="codeval">{c.code}</div>
+        <button class="copybtn" data-code={c.code} data-brand={b.slug} data-commissionable={c.commissionable ?? 'unknown'} type="button">複製</button>
+      </div>
+      <div class="kv"><b>適用條件</b>：{c.restriction}</div>
+      <div class="kv">
+        {versionStale(c, today)
+          ? <span class="pill pill-warn js-verify">⚠ 此為 {versionLabel(c.officialVersion!)} 版，官方頁註明每月更換，新版尚未核對</span>
+          : isStale(c, today)
+          ? <span class="pill pill-warn js-verify">⚠ {c.verifiedAt} 核對，已 {daysSince(c.verifiedAt, today)} 天未複查</span>
+          : <span class="pill pill-ok js-verify">✓ {c.verifiedAt} 核對</span>}
+        　出處：<a class="js-source" data-brand={b.slug} data-code-id={c.code} href={c.source} rel="nofollow noopener" target="_blank">Klook eSIM 專區</a>
+      </div>
+    </div>
+  ))}
+
+  <h2>Klook 寫「海外全商品／全站」的銀行碼</h2>
+  <p class="kv">
+    eSIM 專區自己掛的就是全站碼，所以折扣總覽頁上寫「海外全商品」「全站商品」的銀行碼，同樣能在 eSIM 付款頁輸入。
+    每組綁定發卡行、每月限用 1 次、月底換版——完整 {klookLive.length} 組（含飯店、鐵路類）在 <a href="/store/klook/">Klook 優惠碼</a> 頁。
+  </p>
+  {klookSitewide.map((c) => card(klook, c)).map(({ b, c, min }) => (
+    <div class="codecard" data-expires={c.expiresAt ?? ''} data-verified={c.verifiedAt} data-version-end={versionEnd(c) ?? ''} data-version-label={c.officialVersion ? versionLabel(c.officialVersion) : ''}>
+      <div class="benefit">{c.benefit}　{min ? <span class="pill pill-warn">有門檻</span> : <span class="pill pill-ok">無門檻</span>}</div>
+      <div class="codeline">
+        <div class="codeval">{c.code}</div>
+        <button class="copybtn" data-code={c.code} data-brand={b.slug} data-commissionable={c.commissionable ?? 'unknown'} type="button">複製</button>
+      </div>
+      <div class="kv"><b>{c.card ? `限 ${c.card}` : '適用條件'}</b>：{c.restriction}</div>
+      <div class="kv">
+        {versionStale(c, today)
+          ? <span class="pill pill-warn js-verify">⚠ 此為 {versionLabel(c.officialVersion!)} 版，官方頁註明每月更換，新版尚未核對</span>
+          : isStale(c, today)
+          ? <span class="pill pill-warn js-verify">⚠ {c.verifiedAt} 核對，已 {daysSince(c.verifiedAt, today)} 天未複查</span>
+          : <span class="pill pill-ok js-verify">✓ {c.verifiedAt} 核對</span>}
+        　出處：<a class="js-source" data-brand={b.slug} data-code-id={c.code} href={c.source} rel="nofollow noopener" target="_blank">品牌官方頁</a>
+        {versionEnd(c) && !versionStale(c, today) && (
+          <span class="js-version" data-version-end={versionEnd(c)} data-version-label={versionLabel(c.officialVersion!)}>
+            　<span class={daysUntil(versionEnd(c)!, today) <= 3 ? 'pill pill-warn' : 'pill pill-none'}>
+              {versionLabel(c.officialVersion!)} 版・官方頁註明月底換版・剩 {daysUntil(versionEnd(c)!, today)} 天
+            </span>
+          </span>
+        )}
+      </div>
+    </div>
+  ))}
+
+  <h2>KKday：沒有 eSIM 專屬碼，這幾組最接近</h2>
+  <p class="kv">
+    KKday 官方折扣碼頁沒有任何一組寫 eSIM。能試的只有「全球商品」類（門檻高）和寫「日本商品」的星期碼。
+    完整 {kkLive.length} 組在 <a href="/store/kkday/">KKday 折扣碼</a> 頁。
+  </p>
+  {[...kkJapan, ...kkSitewide].map((c) => card(kkday, c)).map(({ b, c, min }) => (
+    <div class="codecard" data-expires={c.expiresAt ?? ''} data-verified={c.verifiedAt} data-weekday={c.weekday ?? ''}>
+      <div class="benefit">
+        {c.benefit}　{min ? <span class="pill pill-warn">有門檻</span> : <span class="pill pill-ok">無門檻</span>}
+        {c.weekday !== undefined && <span class={`pill js-wd ${c.weekday === wd ? 'pill-ok' : 'pill-none'}`}>限週{WD_NAMES[c.weekday]}下單{c.weekday === wd ? '・今天就是' : ''}</span>}
+      </div>
+      <div class="codeline">
+        <div class="codeval">{c.code}</div>
+        <button class="copybtn" data-code={c.code} data-brand={b.slug} data-commissionable={c.commissionable ?? 'unknown'} type="button">複製</button>
+      </div>
+      <div class="kv"><b>{c.card ? `限 ${c.card}` : '適用條件'}</b>：{c.restriction}</div>
+      <div class="kv">
+        {isStale(c, today)
+          ? <span class="pill pill-warn js-verify">⚠ {c.verifiedAt} 核對，已 {daysSince(c.verifiedAt, today)} 天未複查</span>
+          : <span class="pill pill-ok js-verify">✓ {c.verifiedAt} 核對</span>}
+        　出處：<a class="js-source" data-brand={b.slug} data-code-id={c.code} href={c.source} rel="nofollow noopener" target="_blank">品牌官方頁</a>
+        {c.expiresAt && (
+          <span class="js-expiry" data-expires={c.expiresAt}>
+            　<span class={daysUntil(c.expiresAt, today) <= 3 ? 'pill pill-warn' : 'pill pill-none'}>
+              {daysUntil(c.expiresAt, today) === 0 ? `今天是最後一天（${c.expiresAt}）` : `${c.expiresAt} 失效・剩 ${daysUntil(c.expiresAt, today)} 天`}
+            </span>
+          </span>
+        )}
+      </div>
+    </div>
+  ))}
+  {kkJapan.length + kkSitewide.length === 0 && (
+    <div class="empty"><strong>{today} 核對時，KKday 沒有能套到 eSIM 的碼。</strong><p>上一輪的碼已過官方失效日，我們不留。</p></div>
+  )}
+
+  <h2>DJB：沒有公開折扣碼</h2>
+  <div class="campaign">
+    <strong>官網能拿到的只有這兩種折扣</strong>
+    <ul class="steps">
+      <li><b>會員專屬 25% 折扣</b>：官網頁首寫的，註冊登入後套用，不用輸碼。</li>
+      <li><b>早鳥折扣</b>：日本 eSIM 商品頁寫「選擇 180 天後的使用日期享 9 折、240 天後享 8 折」；提前使用要先取消原訂單重下。</li>
+      <li>結帳頁有「折價券代碼」欄，但官方頁沒公布任何代碼；紅利點數（消費滿 100 元得 1 點）和折價券不能同時用。</li>
+    </ul>
+    <p class="kv">
+      核對頁面：<a class="js-merchant" data-brand="djb" data-link-type="official" href={DJB_JP} rel="nofollow noopener" target="_blank">DJB 日本 eSIM 商品頁</a>（標價 NT$16 起，Docomo／Softbank／KDDI／Rakuten）・{today} 核對。
+      搜尋結果裡那些「DJB 折扣碼」多半是部落客或 YouTuber 的專屬碼，官方頁查不到、我們也驗不了，所以不列。
+    </p>
+  </div>
+
+  <h2>eSIM 折扣碼怎麼用、不能用怎麼辦</h2>
+  <ul class="steps">
+    <li><b>在哪輸入</b>：Klook 在付款頁「優惠碼」欄（eSIM 專區的碼要先點「馬上領」）；KKday 在結帳頁「折扣碼」欄；DJB 在結帳頁「折價券代碼」欄。</li>
+    <li><b>不能用最常見的四個原因</b>：沒達到門檻（eSIM 太便宜）、付款卡不是那組碼綁的發卡行、這個月已經用過一次、月底換版了但你用的是舊碼。</li>
+    <li><b>Klook 和 DJB 哪家便宜</b>：專區標的起價 Klook NT$11、DJB NT$16，但那是最短天數最小流量的方案；天數、流量、電信商都不同，起價不能直接比，套完折扣再看總價。</li>
+    <li><b>什麼時候該等</b>：Klook 銀行碼月底換版，月初新一輪核完會記在<a href="/changes/">異動紀錄</a>；不急的話等月初再買。</li>
+  </ul>
+
+  <h2>其他品牌</h2>
+  <p class="kv">
+    <a href="/store/klook/">Klook 優惠碼</a>　·　<a href="/store/kkday/">KKday 折扣碼</a>　·　<a href="/store/agoda/">Agoda 折扣碼</a>　·　<a href="/changes/">哪些碼快失效</a>
+  </p>
+
+  {/* 客戶端兜底：與品牌頁同一套口徑。靜態站只在 push 時 build，過期下架、天數倒數、星期判定都要在瀏覽器重算。 */}
+  <script is:inline define:vars={{ staleAfter: STALE_AFTER_DAYS }}>
+    (function () {
+      var today;
+      try {
+        today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Shanghai' }).format(new Date());
+      } catch (e) { return; }
+      var wdNow = (new Date(today + 'T00:00:00Z').getUTCDay() + 6) % 7;
+      var names = ['一', '二', '三', '四', '五', '六', '日'];
+      var cards = document.querySelectorAll('.codecard');
+      for (var i = 0; i < cards.length; i++) {
+        var el = cards[i];
+        var exp = el.getAttribute('data-expires');
+        if (exp && exp < today) { el.remove(); continue; }
+        var v = el.getAttribute('data-verified');
+        var pill = el.querySelector('.js-verify');
+        if (v && pill) {
+          var days = Math.round((Date.parse(today) - Date.parse(v)) / 86400000);
+          if (days > staleAfter) { pill.className = 'pill pill-warn js-verify'; pill.textContent = '⚠ ' + v + ' 核對，已 ' + days + ' 天未複查'; }
+        }
+        var vend = el.getAttribute('data-version-end');
+        if (vend && pill) {
+          var vlab = el.getAttribute('data-version-label') || '';
+          var vleft = Math.round((Date.parse(vend) - Date.parse(today)) / 86400000);
+          var vbox = el.querySelector('.js-version');
+          if (vleft < 0) {
+            pill.className = 'pill pill-warn js-verify';
+            pill.textContent = '⚠ 此為 ' + vlab + ' 版，官方頁註明每月更換，新版尚未核對';
+            if (vbox) vbox.remove();
+          } else if (vbox) {
+            var vs = vbox.querySelector('.pill');
+            if (vs) { vs.className = vleft <= 3 ? 'pill pill-warn' : 'pill pill-none'; vs.textContent = vlab + ' 版・官方頁註明月底換版・剩 ' + vleft + ' 天'; }
+          }
+        }
+        if (exp) {
+          var box = el.querySelector('.js-expiry');
+          var span = box && box.querySelector('.pill');
+          if (span) {
+            var left = Math.round((Date.parse(exp) - Date.parse(today)) / 86400000);
+            span.className = left <= 3 ? 'pill pill-warn' : 'pill pill-none';
+            span.textContent = left === 0 ? '今天是最後一天（' + exp + '）' : exp + ' 失效・剩 ' + left + ' 天';
+          }
+        }
+        var w = el.getAttribute('data-weekday');
+        var wp = el.querySelector('.js-wd');
+        if (w !== null && w !== '' && wp) {
+          var isToday = Number(w) === wdNow;
+          wp.className = 'pill js-wd ' + (isToday ? 'pill-ok' : 'pill-none');
+          wp.textContent = '限週' + names[Number(w)] + '下單' + (isToday ? '・今天就是' : '');
+        }
+      }
+    })();
+  </script>
+</Base>
