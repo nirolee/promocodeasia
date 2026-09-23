@@ -7,9 +7,22 @@ export interface Props {
   canonical?: string;
   /** 空壳页（既没码也没活动）传 true：输出 noindex,follow，不参与排名但仍传递内链。 */
   noindex?: boolean;
+  /** 面包屑（首頁 → 品牌），有就输出 BreadcrumbList */
+  breadcrumb?: { name: string; url: string }[];
 }
-const { title, description, canonical, noindex = false } = Astro.props;
-const url = canonical ?? new URL(Astro.url.pathname, 'https://promocodeasia.com').toString();
+const { title, description, canonical, noindex = false, breadcrumb } = Astro.props;
+const SITE = 'https://promocodeasia.com';
+const url = canonical ?? new URL(Astro.url.pathname, SITE).toString();
+// 结构化数据。Google 对优惠码没有富摘要，这里只放 WebSite + Breadcrumb——零成本、不撒谎。
+const ld: Record<string, unknown>[] = [
+  { '@context': 'https://schema.org', '@type': 'WebSite', name: 'PromoCodeAsia', url: SITE + '/', inLanguage: 'zh-Hant' },
+];
+if (breadcrumb && breadcrumb.length) {
+  ld.push({
+    '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+    itemListElement: breadcrumb.map((b, i) => ({ '@type': 'ListItem', position: i + 1, name: b.name, item: SITE + b.url })),
+  });
+}
 ---
 <!DOCTYPE html>
 <html lang="zh-Hant">
@@ -20,6 +33,7 @@ const url = canonical ?? new URL(Astro.url.pathname, 'https://promocodeasia.com'
   <meta name="description" content={description} />
   <link rel="canonical" href={url} />
   {noindex && <meta name="robots" content="noindex,follow" />}
+  {ld.map((o) => <script type="application/ld+json" set:html={JSON.stringify(o)} />)}
   <meta property="og:type" content="website" />
   <meta property="og:title" content={title} />
   <meta property="og:description" content={description} />

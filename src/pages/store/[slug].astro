@@ -20,14 +20,17 @@ const shortDate = latest ? `${Number(latest.slice(5, 7))}/${Number(latest.slice(
 // 無碼但有活動的品牌（Agoda、CASETiFY）：搜「XX 優惠碼」的人以為有碼可貼，
 // 我們的價值恰恰是告訴他「沒有碼，但優惠是這樣拿的」——標題要把這件事說出來，
 // 不然只寫「目前沒有」，SERP 上就是個零點擊的死頁。
+// 主词看品牌（KKday 是「折扣碼」，其余「優惠碼」，见 brands.ts 的 term 注释）；副词写进 description 和正文
+const term = brand.term ?? '優惠碼';
+const alt = term === '折扣碼' ? '優惠碼' : '折扣碼';
 const pageTitle = codes.length > 0
-  ? `${brand.name}優惠碼｜${codes.length} 組，${shortDate} 逐組核對 - PromoCodeAsia`
+  ? `${brand.name}${term}｜${codes.length} 組，${shortDate} 逐組核對 - PromoCodeAsia`
   : brand.campaigns.length > 0
-    ? `${brand.name}優惠碼｜沒有公開碼，${brand.campaigns.length} 檔官方優惠這樣拿 - PromoCodeAsia`
-    : `${brand.name}優惠碼｜目前沒有可用的公開碼 - PromoCodeAsia`;
+    ? `${brand.name}${term}｜沒有公開碼，${brand.campaigns.length} 檔官方優惠這樣拿 - PromoCodeAsia`
+    : `${brand.name}${term}｜目前沒有可用的公開碼 - PromoCodeAsia`;
 const withExpiry = codes.filter((c) => c.expiresAt).length;
 const pageDesc = codes.length > 0
-  ? `${brand.name}優惠碼 ${codes.length} 組，每組標明適用條件、${shortDate} 的核對日期與官方出處`
+  ? `${brand.name}${term}（${alt}）${codes.length} 組，每組標明適用條件、${shortDate} 的核對日期與官方出處`
     + `${withExpiry > 0 ? `，其中 ${withExpiry} 組附官方失效日` : ''}。過了失效日自動下架，不留過期碼。`
   : brand.campaigns.length > 0
     ? `${brand.name} 目前沒有可輸入的公開優惠碼，但官方優惠是有的。這頁講清楚 ${brand.campaigns.length} 檔怎麼拿、要不要登入、有什麼條件，每檔附核對日期與官方出處。`
@@ -62,11 +65,12 @@ const showCardIndex = cardGroups.length >= 8;
 <Base
   noindex={!substantial}
   title={pageTitle}
-  description={pageDesc}>
+  description={pageDesc}
+  breadcrumb={[{ name: '首頁', url: '/' }, { name: `${brand.name}${term}`, url: `/store/${brand.slug}/` }]}>
   <div class="row" style="display:flex;align-items:center;gap:14px;margin-bottom:8px">
     <div class="avatar" style="width:48px;height:48px;font-size:18px">{initials}</div>
     <div>
-      <h1 style="margin:0">{brand.name}優惠碼</h1>
+      <h1 style="margin:0">{brand.name}{term}</h1>
       <p class="lede" style="margin:2px 0 0">{brand.tagline}</p>
     </div>
   </div>
@@ -205,10 +209,23 @@ const showCardIndex = cardGroups.length >= 8;
 
   <h2>使用前先確認這三件事</h2>
   <ul class="steps">
-    <li>你的付款方式是否符合「適用條件」——台灣的優惠碼絕大多數綁定特定發卡銀行。</li>
+    <li>你的付款方式是否符合「適用條件」——台灣的{term}絕大多數綁定特定發卡銀行。</li>
     <li>多數銀行碼需要<b>先點進品牌的活動頁</b>才會生效，直接在結帳頁貼上可能無效。</li>
     <li>每個帳號通常每月限用一次，且數量有限、以結帳順序為準。</li>
   </ul>
+  <p class="kv">這頁說的{term}，也就是常見說法裡的{alt}——同一回事，結帳時輸入的那串字。</p>
+
+  {/* 品牌页之间的互链。2026-09-23 审计：之前每个品牌页只被首页一根线连着，页面之间互不认识。
+      只列有实质内容的（和 sitemap / noindex 同一判据），空壳页不导权重。 */}
+  <h2>其他品牌</h2>
+  <p class="kv">
+    {BRANDS.filter((b) => b.slug !== brand.slug && hasSubstance(b, today)).map((b, i, arr) => (
+      <>
+        <a href={`/store/${b.slug}/`}>{b.name}{b.term ?? '優惠碼'}</a>{i < arr.length - 1 ? '　·　' : ''}
+      </>
+    ))}
+    　·　<a href="/changes/">哪些碼快失效</a>
+  </p>
 
   {/*
     客户端兜底。为什么需要：这是静态站，过滤发生在 build 时，而 build 只在 push 时触发。

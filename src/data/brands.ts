@@ -87,6 +87,13 @@ export type Brand = {
   nameEn: string;
   /** 页面 H1 之外的一句话定位 */
   tagline: string;
+  /**
+   * 这个品牌的主搜索词用哪个。默认「優惠碼」。
+   * 2026-09-23 审出来的：KKday 官方页、排第一的卡優、Funliday/莫務正業/joycewen 全叫「折扣碼」，
+   * 我们标题/H1/正文只说「優惠碼」，等于把自己排除在那个词的候选之外。Klook 相反（官方和前排都用優惠碼）。
+   * 页面会把另一个词当副词写进 description 和正文，两边都接得住。
+   */
+  term?: '優惠碼' | '折扣碼';
   officialUrl: string;
   /** Admitad program 名称，批下来前仅作备注 */
   admitadProgram: string;
@@ -482,6 +489,7 @@ export const BRANDS: Brand[] = [
     slug: 'kkday',
     name: 'KKday',
     nameEn: 'KKday',
+    term: '折扣碼',
     tagline: '在地體驗、一日遊、票券',
     officialUrl: 'https://www.kkday.com/zh-tw',
     admitadProgram: 'KKday WW（7.79%）',

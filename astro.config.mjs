@@ -22,6 +22,9 @@ export default defineConfig({
   integrations: [
     sitemap({
       filter: (page) => !emptyBrandPaths.has(new URL(page).pathname),
+      // lastmod = 构建日。这个站每天都在变（倒数、降级、异动纪录），没有 lastmod 等于不给 Google 任何
+      // 「该回来抓」的信号。用构建时间而不是 verifiedAt：过期下架、星期码轮换都不改 verifiedAt。
+      serialize: (item) => ({ ...item, lastmod: new Date().toISOString() }),
     }),
   ],
   build: { format: 'directory' },

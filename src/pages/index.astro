@@ -1,7 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import { BRANDS } from '../data/brands';
-import { liveCodes, todayTW } from '../lib/codes';
+import { liveCodes, todayTW, hasSubstance } from '../lib/codes';
 // 计数必须和品牌页用同一套过期口径，否则会出现「首頁說 7 組、點進去只剩 1 組」
 const today = todayTW();
 const live = new Map(BRANDS.map((b) => [b.slug, liveCodes(b, today)]));
@@ -11,7 +11,7 @@ const latest = allDates.at(-1);
 const initials = (s: string) => s.replace(/[^A-Za-z]/g, '').slice(0, 2).toUpperCase() || s.slice(0, 1);
 ---
 <Base
-  title={`優惠碼查詢｜${BRANDS.reduce((n, b) => n + live.get(b.slug)!.length, 0)} 組，每組標示核對日期與失效日 - PromoCodeAsia`}
+  title={`優惠碼／折扣碼查詢｜${BRANDS.reduce((n, b) => n + live.get(b.slug)!.length, 0)} 組，每組標示核對日期與失效日 - PromoCodeAsia`}
   description="Klook、iHerb、Trip.com、KKday 等品牌的優惠碼整理。每組碼標示我們最後核對的日期與官方出處；查不到有效碼時就直說沒有，不放過期碼。">
   <h1>優惠碼，只放我們核對過的</h1>
   <p class="lede">
@@ -34,13 +34,14 @@ const initials = (s: string) => s.replace(/[^A-Za-z]/g, '').slice(0, 2).toUpperC
     找不到你要的品牌？我們把<a href="/unavailable/">拿不到、驗不了的品牌單獨列了一頁</a>，
     說明原因並告訴你該去哪裡找——不用在這裡空找。
   </p>
+  {/* 只放有码或有活动的品牌。空壳页是 noindex 的，从首页给它导权重没意义；它们列在 /unavailable/ 里。 */}
   <div class="grid">
-    {BRANDS.map((b) => (
+    {BRANDS.filter((b) => hasSubstance(b, today)).map((b) => (
       <a class="brandcard" href={`/store/${b.slug}/`}>
         <div class="row">
           <div class="avatar">{initials(b.nameEn)}</div>
           <div>
-            <div class="nm">{b.name}</div>
+            <div class="nm">{b.name}{b.term ?? '優惠碼'}</div>
             <div class="tag">{b.tagline}</div>
           </div>
         </div>
