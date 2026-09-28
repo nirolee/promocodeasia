@@ -109,13 +109,13 @@ const showCardIndex = cardGroups.length >= 8;
 
   {newCustomerCodes.length > 0 && (
     <div class="today">
-      <strong>第一次在 {brand.name} 下單（{newCustomerLabel}）可以用的碼</strong>
+      <strong>{newCustomerLabel}限定的碼</strong>
       <ul class="todaylist">
         {newCustomerCodes.map((c) => (
-          <li><b>{c.code}</b>　{c.benefit}（{c.restriction}）</li>
+          <li><b>{c.code}</b>　{c.benefit}{c.card ? `（${c.card}）` : ''}</li>
         ))}
       </ul>
-      <p class="kv">這 {newCustomerCodes.length} 組限新客；已經下過單的帳號用下面其他組。</p>
+      <p class="kv">這 {newCustomerCodes.length} 組限新客；怎樣算新客、要不要先點活動連結，見下方同名那組的適用條件。</p>
     </div>
   )}
 
