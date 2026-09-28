@@ -32,8 +32,15 @@ const withExpiry = codes.filter((c) => c.expiresAt).length;
 // 「kkday 折扣碼 9月」「klook 優惠碼 2026 9月」是每个品牌都有的联想词（2026-09-23 Google zh-TW 联想）。
 // 标题已到 SERP 长度上限，月份放 description；用台北当天的年月，随构建自动走。
 const ymLabel = `${today.slice(0, 4)} 年 ${Number(today.slice(5, 7))} 月`;
+// 新客可用的码。「kkday 新戶折扣碼」「kkday app 首購」「klook 新戶優惠碼」都是联想词（2026-09-28 Google zh-TW 联想），
+// 这几组原本散在 30 组里，第一次下单的读者得逐条扫；「新戶／首購」这两个说法页面上也没出现过。
+const newCustomerCodes = codes.filter((c) => c.customer === '新客');
+const hasAppFirst = newCustomerCodes.some((c) => /APP/i.test(c.category ?? ''));
+const newCustomerLabel = hasAppFirst ? '新戶／APP 首購' : '新戶／首購';
 const pageDesc = codes.length > 0
-  ? `${ymLabel}最新 ${brand.name}${term}（${alt}）${codes.length} 組，每組標明適用條件、${shortDate} 的核對日期與官方出處`
+  ? `${ymLabel}最新 ${brand.name}${term}（${alt}）${codes.length} 組`
+    + `${newCustomerCodes.length > 0 ? `（含 ${newCustomerCodes.length} 組${newCustomerLabel}）` : ''}`
+    + `，每組標明適用條件、${shortDate} 的核對日期與官方出處`
     + `${withExpiry > 0 ? `，其中 ${withExpiry} 組附官方失效日` : ''}。過了失效日自動下架，不留過期碼。`
   : brand.campaigns.length > 0
     ? `${brand.name} 目前沒有可輸入的公開優惠碼，但官方優惠是有的。這頁講清楚 ${brand.campaigns.length} 檔怎麼拿、要不要登入、有什麼條件，每檔附核對日期與官方出處。`
@@ -97,6 +104,18 @@ const showCardIndex = cardGroups.length >= 8;
       <p class="kv">
         這個品牌有 {weekdayCodes.length} 組碼綁定星期幾下單，每天能用的不一樣。
       </p>
+    </div>
+  )}
+
+  {newCustomerCodes.length > 0 && (
+    <div class="today">
+      <strong>第一次在 {brand.name} 下單（{newCustomerLabel}）可以用的碼</strong>
+      <ul class="todaylist">
+        {newCustomerCodes.map((c) => (
+          <li><b>{c.code}</b>　{c.benefit}（{c.restriction}）</li>
+        ))}
+      </ul>
+      <p class="kv">這 {newCustomerCodes.length} 組限新客；已經下過單的帳號用下面其他組。</p>
     </div>
   )}
 
