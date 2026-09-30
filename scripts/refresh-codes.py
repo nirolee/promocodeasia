@@ -221,12 +221,12 @@ def codes_from_tables(snap, cfg):
 
     known = {f["code"] for f in found}
 
-    def add(code, ctx, exp, where):
+    def add(code, ctx, exp, where, blog_only=False):
         if code in known:
             return
         known.add(code)
         found.append({"code": code, "context": ctx, "expiry_raw": exp,
-                      "blog_only": False, "table": where})
+                      "blog_only": blog_only, "table": where})
 
     txt = snap["text"]
     # 表格外的码：KKday 银行码是「CODE ⏎ 描述 ⏎ 9/30」这种排版，
@@ -236,6 +236,18 @@ def codes_from_tables(snap, cfg):
     for m in pat.finditer(txt):
         if CODE_RE.match(m.group(1)):
             add(m.group(1), m.group(2).strip(), m.group(3), "正文區塊")
+
+    # KKday「編輯精選」區是「標題 ⏎ CODE ⏎ 複製 ⏎ 12/31前…」：不是表格，上面那條正則又被夾在中間的
+    # 「複製」斷開。2026-10-01 就是這樣漏掉 KBEAUTY88、26KDRAMA15 的。
+    # 標題寫「部落格讀者」的是渠道專屬碼（TAKH4T4），和表格裡標 V 的一樣不能收。
+    btn = re.compile(r"^([^\n]{2,40})\s*\n+\s*([A-Z0-9]{4,20})\s*\n+\s*複製\s*\n+\s*([^\n]{4,120})$", re.M)
+    for m in btn.finditer(txt):
+        title, code, desc = m.group(1).strip(), m.group(2), m.group(3).strip()
+        if not CODE_RE.match(code):
+            continue
+        exp = re.match(r"(\d{1,2}/\d{1,2})前", desc)
+        add(code, "%s / %s" % (title, desc), exp.group(1) if exp else "", "複製按鈕區",
+            blog_only="部落格讀者" in title or "需透過此文" in desc)
 
     # 写在句子里的码：「APP90」、【WIN600】、輸入折扣碼 F1ZONE4。
     # 只认被引号/方括号包起来、或紧跟在「折扣碼/優惠碼」后面的，避免把正文里的普通大写词当成码。
