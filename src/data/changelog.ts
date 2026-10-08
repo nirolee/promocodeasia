@@ -25,6 +25,17 @@ export type Change = {
 
 export const CHANGES: Change[] = [
   {
+    date: '2026-10-08',
+    summary: 'KKday 補上官方 10 月銀行碼：新增 7 組、玉山沿用碼名延到 10/31，9 月版 6 組與日本行程 8 折下架；星展「卡號前 8 碼 + DBS26」恢復；新增日韓滑雪早鳥碼。',
+    details: [
+      'KKday 新增 10 月銀行碼：街口 JKOJP2610、台新 Richart TS26H2350、國泰 CUBE CUBEJP85OCT、富邦 J 卡 JCARD101200、JCB 26JCB10、將來 NEXT300OCT、AFTEE AFTEE85OCT，都到 10/31。',
+      'KKday 延長：玉山 ESUN26SEP1200 官方 10 月版沿用同一個碼名，失效日改為 10/31；冬季超早鳥 WIN600／WIN1200 官方延到 10/31。',
+      'KKday 新增：JPKRSKI88 日韓滑雪早鳥單筆滿 US$200 享 88 折，到 2027/2/27。',
+      'KKday 下架：CUBE26SEP600、SKBINF7509（新光 10 月版沒有）、JCARD091200、26JCB09、NEXT8SEP26、PX8826（全支付 10 月版沒有）、KKSUMMERTOUR，官方頁上已找不到。',
+      '星展饗樂生活卡官方 10 月版恢復（標 10/31），放回活動區。部落格讀者專屬碼 TAKH4T4 官方註明需透過該文使用，不收錄。',
+    ],
+  },
+  {
     date: '2026-10-01',
     summary: 'Klook 換成官方 10 月版：37 組銀行碼逐組核對，新增 9 組、新光 2 組下架；KKday 新增韓國體驗、韓劇行程 2 組，9 月銀行碼到期下架，10 月版官方尚未公布。',
     details: [
