@@ -46,7 +46,17 @@ export function isStale(c: Code, today: string = todayTW()): boolean {
 
 /** 该显示给读者的码：过期的直接不进 HTML。 */
 export function liveCodes(b: Brand, today: string = todayTW()): Code[] {
-  return b.codes.filter((c) => !isExpired(c, today));
+  return b.codes.filter((c) => !isExpired(c, today) && c.availability !== 'sold_out');
+}
+
+/** 已售罄商品的碼保留官方出處，但不能算進可用碼。 */
+export function soldOutCodes(b: Brand, today: string = todayTW()): Code[] {
+  return b.codes.filter((c) => c.availability === 'sold_out' && !isExpired(c, today));
+}
+
+/** 官方有明確截止日期的活動：截止日當天仍保留，不提前判過期。 */
+export function liveCampaigns(b: Brand, today: string = todayTW()): Brand['campaigns'] {
+  return b.campaigns.filter((c) => !c.expiresAt || c.expiresAt >= today);
 }
 
 /** 已过期、被摘掉的码。用来在空态里说明「上一组什么时候失效的」。 */
@@ -65,7 +75,7 @@ export function expiredCodes(b: Brand, today: string = todayTW()): Code[] {
  * 注意用的是 liveCodes 而不是 brand.codes：码可能全过期了，那也算空。
  */
 export function hasSubstance(brand: Brand, today: string = todayTW()): boolean {
-  return liveCodes(brand, today).length > 0 || brand.campaigns.length > 0;
+  return liveCodes(brand, today).length > 0 || liveCampaigns(brand, today).length > 0;
 }
 
 /** 台北时区的今天是星期几，0=周一 … 6=周日。与 Code.weekday 同一口径。

@@ -1,7 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import { BRANDS } from '../../data/brands';
-import { liveCodes, expiredCodes, isStale, daysSince, daysUntil, todayTW, weekdayTW, groupByCard, hasSubstance, versionEnd, versionStale, versionLabel, STALE_AFTER_DAYS } from '../../lib/codes';
+import { liveCodes, soldOutCodes, liveCampaigns, expiredCodes, isStale, daysSince, daysUntil, todayTW, weekdayTW, groupByCard, hasSubstance, versionEnd, versionStale, versionLabel, STALE_AFTER_DAYS } from '../../lib/codes';
 export function getStaticPaths() {
   return BRANDS.map((b) => ({ params: { slug: b.slug }, props: { brand: b } }));
 }
@@ -9,6 +9,8 @@ const { brand } = Astro.props;
 const today = todayTW();
 // 过期的码不进 HTML。空态里要说明「上一组什么时候失效的」，所以另外留一份。
 const codes = liveCodes(brand, today);
+const soldOut = soldOutCodes(brand, today);
+const campaigns = liveCampaigns(brand, today);
 const dropped = expiredCodes(brand, today);
 const lastDropped = dropped.map((c) => c.expiresAt!).sort().at(-1);
 const latest = codes.map((c) => c.verifiedAt).sort().at(-1);
@@ -17,7 +19,7 @@ const initials = brand.nameEn.replace(/[^A-Za-z]/g, '').slice(0, 2).toUpperCase(
 // 组数我们拼不过就算了，但「逐組核對」是他们没有的——排第一那篇自己标的更新日是 2026-08-03。
 // 日期用 M/D 短式，标题在 SERP 上只有约 30 个全角字的空间。
 const shortDate = latest ? `${Number(latest.slice(5, 7))}/${Number(latest.slice(8, 10))}` : '';
-// 無碼但有活動的品牌（Agoda、CASETiFY）：搜「XX 優惠碼」的人以為有碼可貼，
+// 無碼但有活動的品牌（目前 Agoda）：搜「XX 優惠碼」的人以為有碼可貼，
 // 我們的價值恰恰是告訴他「沒有碼，但優惠是這樣拿的」——標題要把這件事說出來，
 // 不然只寫「目前沒有」，SERP 上就是個零點擊的死頁。
 // 主词看品牌（KKday 是「折扣碼」，其余「優惠碼」，见 brands.ts 的 term 注释）；副词写进 description 和正文
@@ -25,8 +27,8 @@ const term = brand.term ?? '優惠碼';
 const alt = term === '折扣碼' ? '優惠碼' : '折扣碼';
 const pageTitle = codes.length > 0
   ? `${brand.name}${term}｜${codes.length} 組，${shortDate} 逐組核對 - PromoCodeAsia`
-  : brand.campaigns.length > 0
-    ? `${brand.name}${term}｜沒有公開碼，${brand.campaigns.length} 檔官方優惠這樣拿 - PromoCodeAsia`
+  : campaigns.length > 0
+    ? `${brand.name}${term}｜沒有公開碼，${campaigns.length} 檔官方優惠這樣拿 - PromoCodeAsia`
     : `${brand.name}${term}｜目前沒有可用的公開碼 - PromoCodeAsia`;
 const withExpiry = codes.filter((c) => c.expiresAt).length;
 // 「kkday 折扣碼 9月」「klook 優惠碼 2026 9月」是每个品牌都有的联想词（2026-09-23 Google zh-TW 联想）。
@@ -42,8 +44,8 @@ const pageDesc = codes.length > 0
     + `${newCustomerCodes.length > 0 ? `（含 ${newCustomerCodes.length} 組${newCustomerLabel}）` : ''}`
     + `，每組標明適用條件、${shortDate} 的核對日期與官方出處`
     + `${withExpiry > 0 ? `，其中 ${withExpiry} 組附官方失效日` : ''}。過了失效日自動下架，不留過期碼。`
-  : brand.campaigns.length > 0
-    ? `${brand.name} 目前沒有可輸入的公開優惠碼，但官方優惠是有的。這頁講清楚 ${brand.campaigns.length} 檔怎麼拿、要不要登入、有什麼條件，每檔附核對日期與官方出處。`
+  : campaigns.length > 0
+    ? `${brand.name} 目前沒有可輸入的公開優惠碼，但官方優惠是有的。這頁講清楚 ${campaigns.length} 檔怎麼拿、要不要登入、有什麼條件，每檔附核對日期與官方出處。`
     : `我們目前查不到 ${brand.name} 可輸入的公開優惠碼，所以這頁直接寫明沒有，不放沒驗證過的碼充數。`;
 // 出站链接：联盟批下来之前先用官方地址。
 // 为什么不等联盟批：读者看完码在这页是死路一条，没有任何下一步。
@@ -186,6 +188,18 @@ const showCardIndex = cardGroups.length >= 8;
     </div>
   ))}
 
+  {soldOut.length > 0 && (
+    <section id="sold-out-codes" aria-label="已售罄的優惠碼">
+      <h2>已售罄，暫不推薦購買</h2>
+      <p class="kv">官方活動頁仍列以下碼，但對應商品目前標示已售罄；保留來源供查核，不計入可用碼。</p>
+      <ul class="steps">
+        {soldOut.map((c) => (
+          <li data-sold-out-expires={c.expiresAt ?? ''}><code>{c.code}</code>　{c.benefit}　<a href={c.source} rel="nofollow noopener" target="_blank">官方出處</a></li>
+        ))}
+      </ul>
+    </section>
+  )}
+
   {/* 空态。codes 为空时直接显示；客户端把最后一张卡摘掉时由脚本 removeAttribute('hidden')。 */}
   <div class="empty" id="codes-empty" hidden={codes.length > 0}>
     <strong>目前沒有已核對的公開優惠碼。</strong>
@@ -199,18 +213,18 @@ const showCardIndex = cardGroups.length >= 8;
     </p>
   </div>
 
-  {brand.campaigns.length > 0 && (
-    <>
+  {campaigns.length > 0 && (
+    <section id="campaigns-live">
       <h2>進行中的活動（不需輸入碼）</h2>
-      {brand.campaigns.map((c) => (
-        <div class="campaign">
+      {campaigns.map((c) => (
+        <div class="campaign" data-campaign-expires={c.expiresAt ?? ''}>
           <strong>{c.title}</strong>
           <div class="kv">{c.period}</div>
           <p style="margin:8px 0 0">{c.detail}</p>
           <div class="kv">出處：<a href={c.source} rel="nofollow noopener" target="_blank">品牌官方頁</a></div>
         </div>
       ))}
-    </>
+    </section>
   )}
 
   {/*
@@ -267,6 +281,22 @@ const showCardIndex = cardGroups.length >= 8;
         return; // 取不到台北日期就什么都不改，保持 build 时的结果
       }
       var cards = document.querySelectorAll('.codecard');
+      var campaignCards = document.querySelectorAll('[data-campaign-expires]');
+      for (var ci = 0; ci < campaignCards.length; ci++) {
+        var ce = campaignCards[ci];
+        var cexp = ce.getAttribute('data-campaign-expires');
+        if (cexp && cexp < today) ce.remove();
+      }
+      var campaignsSection = document.getElementById('campaigns-live');
+      if (campaignsSection && !campaignsSection.querySelector('.campaign')) campaignsSection.remove();
+      var soldOutItems = document.querySelectorAll('[data-sold-out-expires]');
+      for (var si = 0; si < soldOutItems.length; si++) {
+        var se = soldOutItems[si];
+        var sexp = se.getAttribute('data-sold-out-expires');
+        if (sexp && sexp < today) se.remove();
+      }
+      var soldOutSection = document.getElementById('sold-out-codes');
+      if (soldOutSection && !soldOutSection.querySelector('li')) soldOutSection.remove();
       for (var i = 0; i < cards.length; i++) {
         var el = cards[i];
         var exp = el.getAttribute('data-expires');

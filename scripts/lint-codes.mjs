@@ -16,7 +16,11 @@ const warns = [];
 const daysBetween = (from, to) => Math.round((Date.parse(to) - Date.parse(from)) / 86400000);
 
 // 逐个 code 对象做浅解析（数据是手写字面量，不引入 TS 运行时）
-const blocks = src.split(/\{\s*\n\s*code:/).slice(1);
+const blocks = src.split(/\{\s*(?:(?:\/\/[^\n]*\n)\s*)*code:/).slice(1);
+const declaredCodes = [...src.matchAll(/^\s*code:\s*'([^']+)'/gm)].map((m) => m[1]);
+if (blocks.length !== declaredCodes.length) {
+  errs.push(`校驗器只解析 ${blocks.length} / ${declaredCodes.length} 條碼；請檢查資料格式`);
+}
 for (const b of blocks) {
   const seg = b.slice(0, b.indexOf('},'));
   const get = (k) => (seg.match(new RegExp(k + ":\\s*'([^']*)'")) || [])[1];

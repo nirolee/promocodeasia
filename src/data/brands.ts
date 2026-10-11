@@ -29,6 +29,8 @@
 export type Code = {
   /** 结账时输入的字符串 */
   code: string;
+  /** 官方商品目前已售罄；保留來源供查核，但不列作可用碼。 */
+  availability?: 'sold_out';
   /** 折扣内容，用读者能直接判断「关不关我事」的话写 */
   benefit: string;
   /** 使用条件：发卡行、新客限定、次数上限、最低消费。没有条件就写「無」 */
@@ -101,7 +103,7 @@ export type Brand = {
   affiliateUrl: string;
   codes: Code[];
   /** 非码类优惠（活动、信用卡回馈），同样要求出处 */
-  campaigns: { title: string; detail: string; period: string; source: string }[];
+  campaigns: { title: string; detail: string; period: string; source: string; expiresAt?: string }[];
 };
 
 export const BRANDS: Brand[] = [
@@ -504,8 +506,9 @@ export const BRANDS: Brand[] = [
     campaigns: [
       {
         title: '12 週年慶 全站最高折 NT$1,212',
-        detail: '週週推出全球熱門商品買 1 送 1，週末全站 88 折。不綁信用卡，數量有限、以結帳順序為準。',
-        period: '2026-09-18 ~ 2026-10-11',
+        detail: '週週推出全球熱門商品買 1 送 1，週末全站 88 折。不綁信用卡，數量有限、以結帳順序為準；額滿可能提前結束。',
+        period: '官方標示 2026-09-18 至 2026-10-11；未註明截止時刻及時區',
+        expiresAt: '2026-10-11',
         source: 'https://www.klook.com/zh-TW/blog/klook-discount-collection/',
       },
     ],
@@ -1238,6 +1241,7 @@ export const BRANDS: Brand[] = [
       },
       {
         code: 'F1ZONE4',
+        availability: 'sold_out',
         benefit: 'F1 新加坡站 Zone 4 一日入場券 95 折',
         restriction: '限 Zone 4 Walkabout Pass',
         category: 'Zone 4 Walkabout Pass',
@@ -1248,6 +1252,7 @@ export const BRANDS: Brand[] = [
       },
       {
         code: 'F1PREMWALK',
+        availability: 'sold_out',
         benefit: 'F1 新加坡站全區一日入場券 97 折',
         restriction: '限 Premier Walkabout Pass',
         category: 'Premier Walkabout Pass',
@@ -1358,28 +1363,10 @@ export const BRANDS: Brand[] = [
     // 接链接只是让点进来的人有个带追踪的出口，不会因此带来搜索流量。
     affiliateUrl: 'https://bywiola.com/g/tv8h1uy8ni1a1e4d44722f7a77e67e/',
     codes: [],
-    // 2026-09-22 用真瀏覽器核官方「優惠碼及優惠券」頁（/zh_TW/promotions）：
-    // 三檔全是會員/身份綁定，沒有可複製的公開碼，所以放 campaigns 不放 codes。
-    campaigns: [
-      {
-        title: '加入 CASETiFY Club 會員享 9 折',
-        detail: '優惠碼在加入 Club 後由帳號發放（官方頁按鈕是「獲取優惠碼」），不是公開字串，得先登入會員。',
-        period: '常態（2026-09-22 核對時進行中）',
-        source: 'https://www.casetify.com/zh_TW/promotions',
-      },
-      {
-        title: '學生專屬 85 折',
-        detail: '需先透過 UNiDAYS 驗證學生身份，驗證後才拿得到折扣，無法直接輸入碼。',
-        period: '常態',
-        source: 'https://www.casetify.com/zh_TW/promotions',
-      },
-      {
-        title: '訂單滿 $40 免運費',
-        detail: '官方首頁標示「訂單滿 $40 即可享免運費」，幣別與門檻以結帳頁實際顯示為準；另有 10 天無條件退換貨。',
-        period: '常態',
-        source: 'https://www.casetify.com/zh_TW/',
-      },
-    ],
+    // 2026-10-11 復核：公開可讀的官方 promotions／首頁未呈現原列的
+    // Club 9 折、學生 85 折、滿 $40 免運條款。未能證實現行有效前，
+    // 不以「進行中的活動」對外展示；可在官方條款重新可核後補回。
+    campaigns: [],
   },
 ];
 
