@@ -565,10 +565,10 @@ export const BRANDS: Brand[] = [
     slug: 'trip-com',
     name: 'Trip.com',
     nameEn: 'Trip.com',
-    tagline: '機票、飯店、火車票',
+    tagline: '機票、飯店、火車票；銀行優惠請從各碼的「品牌官方頁」進入，下方合作連結供一般預訂使用',
     officialUrl: 'https://tw.trip.com/',
-    admitadProgram: 'Trip.com WW',
-    affiliateUrl: '',
+    admitadProgram: 'Trip.com 自營聯盟（佣金依品類及有效訂單條款）',
+    affiliateUrl: 'https://tw.trip.com/?Allianceid=11024070&SID=333721088&trip_sub1=promocodeasia_store&trip_sub3=D20265261',
     // 2026-09-21 只看了首页和博客就判成「没有公开码」，2026-09-28 才发现码全在银行合作页
     // （tw.trip.com/sale/w/<id>/<bank>-2024yearround.html，条款里写 2026 全年有效）。
     // tw.trip.com/blog/ 对 CDP 浏览器回「whaleguard block」，/sale/w/ 不挡。
