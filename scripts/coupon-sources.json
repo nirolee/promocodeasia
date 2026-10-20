@@ -1,0 +1,12 @@
+[
+  {"id":"kkday-aftee","brand":"kkday","url":"https://www.kkday.com/zh-tw/promo/aftee","parser":"aftee","transport":"browser","interval_hours":48},
+  {"id":"kkday-bank","brand":"kkday","url":"https://www.kkday.com/zh-tw/blog/25229/kkday-bank-coupon","parser":"generic","transport":"browser","interval_hours":48},
+  {"id":"klook-bank","brand":"klook","url":"https://www.klook.com/zh-TW/blog/klook-discount-collection/","parser":"generic","transport":"browser","interval_hours":48},
+  {"id":"trip-esun","brand":"trip-com","url":"https://tw.trip.com/sale/w/6215/esunbank-2024yearround.html?locale=zh-TW&curr=twd&allianceid=3830980&sid=38776858","parser":"generic","transport":"browser","interval_hours":72},
+  {"id":"kkday-autumn","brand":"kkday","url":"https://www.kkday.com/zh-tw/promo/autumn_trip","parser":"generic","transport":"browser","interval_hours":168},
+  {"id":"kkday-flash","brand":"kkday","url":"https://www.kkday.com/zh-tw/promo/flashday","parser":"generic","transport":"browser","interval_hours":168},
+  {"id":"klook-deals","brand":"klook","url":"https://www.klook.com/zh-TW/deals/","parser":"generic","transport":"browser","interval_hours":72},
+  {"id":"klook-wishlist","brand":"klook","url":"https://www.klook.com/zh-TW/tetris/promo/buildyouryearendwishlist/","parser":"generic","transport":"browser","interval_hours":168},
+  {"id":"iherb-home","brand":"iherb","url":"https://tw.iherb.com/","parser":"generic","transport":"browser","interval_hours":168},
+  {"id":"casetify-home","brand":"casetify","url":"https://www.casetify.com/zh_TW/","parser":"generic","transport":"browser","interval_hours":168}
+]

@@ -4,3 +4,4 @@ dist/
 .secrets/
 scripts/threads.log
 scripts/.threads-posted
+.cache/coupon-sync/
