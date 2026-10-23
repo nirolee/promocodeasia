@@ -72,10 +72,10 @@ const card = (b: Brand, c: Code) => ({ b, c, min: hasMin(c) });
   </p>
 
   <div class="trust">
-    <strong>先講結論（{today}）</strong>
+    <strong>怎麼選：各品牌核對時間分列，不代表本輪全部重驗</strong>
     <p><b>Klook</b>：eSIM 專區掛了 {klookZone.length} 組；另有 {klookSitewide.length} 組「海外全商品／全站」銀行碼理論上也適用，其中 {klookSitewide.filter((c) => !hasMin(c)).length} 組無門檻。</p>
     <p><b>KKday</b>：沒有 eSIM 專屬碼。{kkSitewide.length} 組「全球商品」碼門檻都在 $3,000 以上；最接近的是{kkJapan.map((c) => `${c.code}（${c.benefit}）`).join('、') || '——'}，官方寫的是「日本商品」，沒列排除項，但我們沒實測 eSIM 能不能過。</p>
-    <p><b>DJB</b>：官網沒有公開折扣碼。只有註冊會員 25% 折扣，和早鳥折扣（使用日在 180 天後 9 折、240 天後 8 折）。搜尋結果裡的「DJB 折扣碼」多半是部落客專屬碼，不在官方頁上，我們不收。</p>
+    <p><b>DJB</b>：2026-09-23 核對時未見公開折扣碼。會員與早鳥優惠是當時紀錄，本輪未重驗，購買前請回官方頁確認；不轉貼其他創作者的專屬碼。</p>
   </div>
 
   <h2>先比較：直購折扣碼與免費試用</h2>
@@ -102,10 +102,10 @@ const card = (b: Brand, c: Code) => ({ b, c, min: hasMin(c) });
   <h2>Klook eSIM 專區掛的碼</h2>
   <p class="kv">
     Klook 在 <a class="js-merchant" data-brand="klook" data-link-type={klookLinkType} href={klookEsimHref} rel="nofollow sponsored noopener" target="_blank">eSIM 專區</a>
-    有一個「優惠碼」區塊，點「查看全部」看到的就是這些。專區標的日本 eSIM 從 NT$11 起（Softbank／DOCOMO）。
+    先前有一個「優惠碼」區塊，點「查看全部」可查看；2026-09-23 曾標日本 eSIM 從 NT$11 起（Softbank／DOCOMO），不是本輪即時報價。
   </p>
   {klookZone.length === 0 ? (
-    <div class="empty"><strong>{today} 核對時，Klook eSIM 專區沒有掛任何碼。</strong><p>下面「全站」類的銀行碼仍可試。</p></div>
+    <div class="empty"><strong>目前資料庫未收錄 Klook eSIM 專區的已核對碼。</strong><p>這不代表官網現在沒有優惠；下面全站類銀行碼仍須確認 eSIM 商品資格。</p></div>
   ) : klookZone.map((c) => card(klook, c)).map(({ b, c, min }) => (
     <div class="codecard" data-expires={c.expiresAt ?? ''} data-verified={c.verifiedAt} data-version-end={versionEnd(c) ?? ''} data-version-label={c.officialVersion ? versionLabel(c.officialVersion) : ''}>
       <div class="benefit">{c.benefit}　{min ? <span class="pill pill-warn">有門檻</span> : <span class="pill pill-ok">無門檻</span>}</div>
@@ -188,10 +188,10 @@ const card = (b: Brand, c: Code) => ({ b, c, min: hasMin(c) });
     </div>
   ))}
   {kkJapan.length + kkSitewide.length === 0 && (
-    <div class="empty"><strong>{today} 核對時，KKday 沒有能套到 eSIM 的碼。</strong><p>上一輪的碼已過官方失效日，我們不留。</p></div>
+    <div class="empty"><strong>目前資料庫未收錄符合本頁篩選的 KKday eSIM 候選碼。</strong><p>是否有其他優惠仍以官方頁為準；不留已過官方期限的碼充數。</p></div>
   )}
 
-  <h2>DJB：沒有公開折扣碼</h2>
+  <h2>DJB：前次核對紀錄（本輪未重驗）</h2>
   <div class="campaign">
     <strong>官網能拿到的只有這兩種折扣</strong>
     <ul class="steps">
@@ -200,7 +200,7 @@ const card = (b: Brand, c: Code) => ({ b, c, min: hasMin(c) });
       <li>結帳頁有「折價券代碼」欄，但官方頁沒公布任何代碼；紅利點數（消費滿 100 元得 1 點）和折價券不能同時用。</li>
     </ul>
     <p class="kv">
-      核對頁面：<a class="js-merchant" data-brand="djb" data-link-type="official" href={DJB_JP} rel="nofollow noopener" target="_blank">DJB 日本 eSIM 商品頁</a>（標價 NT$16 起，Docomo／Softbank／KDDI／Rakuten）・{today} 核對。
+      核對頁面：<a class="js-merchant" data-brand="djb" data-link-type="official" href={DJB_JP} rel="nofollow noopener" target="_blank">DJB 日本 eSIM 商品頁</a>・2026-09-23 核對，當時標價 NT$16 起；非本輪即時報價。
       搜尋結果裡那些「DJB 折扣碼」多半是部落客或 YouTuber 的專屬碼，官方頁查不到、我們也驗不了，所以不列。
     </p>
   </div>
@@ -209,7 +209,7 @@ const card = (b: Brand, c: Code) => ({ b, c, min: hasMin(c) });
   <ul class="steps">
     <li><b>在哪輸入</b>：Klook 在付款頁「優惠碼」欄（eSIM 專區的碼要先點「馬上領」）；KKday 在結帳頁「折扣碼」欄；DJB 在結帳頁「折價券代碼」欄。</li>
     <li><b>不能用最常見的四個原因</b>：沒達到門檻（eSIM 太便宜）、付款卡不是那組碼綁的發卡行、這個月已經用過一次、月底換版了但你用的是舊碼。</li>
-    <li><b>Klook 和 DJB 哪家便宜</b>：專區標的起價 Klook NT$11、DJB NT$16，但那是最短天數最小流量的方案；天數、流量、電信商都不同，起價不能直接比，套完折扣再看總價。</li>
+    <li><b>Klook 和 DJB 哪家便宜</b>：先前紀錄的起價不是本輪即時報價，而且可能分屬最短天數、最小流量方案。天數、流量、電信商不同，起價不能直接比，請按目前所需方案比較折後總價。</li>
     <li><b>什麼時候該等</b>：Klook 銀行碼月底換版，月初新一輪核完會記在<a href="/changes/">異動紀錄</a>；不急的話等月初再買。</li>
   </ul>
 
