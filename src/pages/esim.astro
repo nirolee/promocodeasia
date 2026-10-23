@@ -12,7 +12,7 @@ import Base from '../layouts/Base.astro';
 import { BRANDS } from '../data/brands';
 import type { Brand, Code } from '../data/brands';
 import {
-  liveCodes, todayTW, daysUntil, daysSince, isStale, isSitewide,
+  liveCodes, liveCampaigns, todayTW, daysUntil, daysSince, isStale, isSitewide,
   versionEnd, versionStale, versionLabel, weekdayTW, STALE_AFTER_DAYS,
 } from '../lib/codes';
 
@@ -23,6 +23,9 @@ const ymLabel = `${today.slice(0, 4)} 年 ${Number(today.slice(5, 7))} 月`;
 
 const klook = BRANDS.find((b) => b.slug === 'klook')!;
 const kkday = BRANDS.find((b) => b.slug === 'kkday')!;
+const airalo = BRANDS.find((b) => b.slug === 'airalo')!;
+const gigsky = BRANDS.find((b) => b.slug === 'gigsky')!;
+const airaloCodes = liveCodes(airalo, today);
 
 // 有沒有滿額／低消門檻。eSIM 一張多半幾百塊，這是讀者最需要先看到的一個字。
 const hasMin = (c: Code) => /滿|低消/.test(c.benefit + c.restriction);
@@ -39,10 +42,7 @@ const kkLive = liveCodes(kkday, today);
 const kkSitewide = byThreshold(kkLive.filter(isSitewide));
 const kkJapan = kkLive.filter((c) => !isSitewide(c) && /日本/.test(c.benefit + (c.category ?? '')) && !/鐵路|機加酒|行程|體驗|包車|租車/.test(c.benefit + (c.category ?? '')));
 
-const total = klookZone.length + klookSitewide.length + kkSitewide.length + kkJapan.length;
-const allDates = [...klookZone, ...klookSitewide, ...kkSitewide, ...kkJapan].map((c) => c.verifiedAt).sort();
-const latest = allDates.at(-1);
-const shortDate = latest ? `${Number(latest.slice(5, 7))}/${Number(latest.slice(8, 10))}` : '';
+const total = klookZone.length + klookSitewide.length + kkSitewide.length + kkJapan.length + airaloCodes.length;
 
 // 出站連結：Klook 有合作連結就走合作連結並帶目標頁（Admitad 深連結用 ulp 參數），沒有就直連官方
 const KLOOK_ESIM = 'https://www.klook.com/zh-TW/esim/';
@@ -50,8 +50,8 @@ const klookEsimHref = klook.affiliateUrl ? `${klook.affiliateUrl}?ulp=${encodeUR
 const klookLinkType = klook.affiliateUrl ? 'affiliate' : 'official';
 const DJB_JP = 'https://en.djbcard.com/product/japan-esim-test-series/?djb-lang=zh_TW';
 
-const pageTitle = `日本 eSIM 折扣碼｜Klook、KKday、DJB 哪些碼能用，${shortDate} 逐組核對 - PromoCodeAsia`;
-const desc = `${ymLabel}最新日本 eSIM 折扣碼（優惠碼）：Klook eSIM 專區掛的碼、Klook／KKday 能用在 eSIM 上的全站碼各有什麼門檻，以及 DJB 為什麼查不到公開碼。每組標示核對日期與官方出處。`;
+const pageTitle = '日本 eSIM 折扣碼｜平台銀行碼、Airalo 上限與免費試用怎麼選 - PromoCodeAsia';
+const desc = `${ymLabel}日本 eSIM 折扣碼（優惠碼）：比較 Klook／KKday 銀行碼門檻、Airalo 折抵上限與 GigSky 標準試用。逐項標示核對日期、資格及官方出處；非付款或開通實測。`;
 
 /** 一張碼卡要顯示的東西，兩個品牌共用同一種寫法 */
 const card = (b: Brand, c: Code) => ({ b, c, min: hasMin(c) });
@@ -60,14 +60,14 @@ const card = (b: Brand, c: Code) => ({ b, c, min: hasMin(c) });
   title={pageTitle}
   description={desc}
   breadcrumb={[{ name: '首頁', url: '/' }, { name: '日本 eSIM 折扣碼', url: '/esim/' }]}>
-  <h1>日本 eSIM 折扣碼：Klook、KKday、DJB 逐家核對</h1>
+  <h1>日本 eSIM 折扣碼：平台銀行碼與直購優惠怎麼選</h1>
   <p class="lede">
     {total > 0
-      ? <span class="pill pill-ok">✓ {total} 組能用在 eSIM 上的碼・最後核對 {latest}</span>
+      ? <span class="pill pill-none">收錄 {total} 組平台與直購候選碼・各自核對日期與限制見下方</span>
       : <span class="pill pill-none">目前沒有能用在 eSIM 上的已核對碼</span>}
   </p>
   <p class="lede">
-    三家賣日本 eSIM 的，只有 Klook 在 eSIM 專區真的掛了碼。其他能用的是各家寫「全站／海外全商品」的銀行碼——
+    原先比較的 Klook、KKday、DJB 三家中，只有 Klook 在 eSIM 專區掛過碼。其他平台候選主要是各家寫「全站／海外全商品」的銀行碼——
     <b>但 eSIM 一張多半幾百塊，滿 $3,000、$5,000 的碼根本碰不到門檻</b>。這頁按「有沒有門檻」排，先看無門檻的。
   </p>
 
@@ -77,6 +77,27 @@ const card = (b: Brand, c: Code) => ({ b, c, min: hasMin(c) });
     <p><b>KKday</b>：沒有 eSIM 專屬碼。{kkSitewide.length} 組「全球商品」碼門檻都在 $3,000 以上；最接近的是{kkJapan.map((c) => `${c.code}（${c.benefit}）`).join('、') || '——'}，官方寫的是「日本商品」，沒列排除項，但我們沒實測 eSIM 能不能過。</p>
     <p><b>DJB</b>：官網沒有公開折扣碼。只有註冊會員 25% 折扣，和早鳥折扣（使用日在 180 天後 9 折、240 天後 8 折）。搜尋結果裡的「DJB 折扣碼」多半是部落客專屬碼，不在官方頁上，我們不收。</p>
   </div>
+
+  <h2>先比較：直購折扣碼與免費試用</h2>
+  <p class="kv">這次另外補查 Airalo 與 GigSky，並未把所有舊碼的核對日期一併刷新。eSIM 商品適用性、折扣資格和本站返佣是三件事；本頁沒有付款或開通實測。</p>
+  {airaloCodes.map((coupon) => (
+    <div class="codecard" data-expires={coupon.expiresAt ?? ''} data-verified={coupon.verifiedAt}>
+      <strong>Airalo：{coupon.benefit}</strong>
+      <p>{coupon.code}・{coupon.restriction}</p>
+      <span class="pill pill-none js-verify">{coupon.verifiedAt} 官方條款核對</span>
+      <p class="kv">計算例：假設合資格金額 US$20，15% 即 US$3，之後便碰到上限；不是任意金額都能省 15%。先查日本方案和手機相容性，再比較折後總價。</p>
+      <a href="/store/airalo/">查看 Airalo 的付款限制與合作入口 →</a>
+      <span class="kv">　<a class="js-source" data-brand="airalo" data-code-id={coupon.code} href={coupon.source} target="_blank" rel="nofollow noopener">官方活動細則</a></span>
+    </div>
+  ))}
+  {liveCampaigns(gigsky, today).map((campaign) => (
+    <div class="campaign">
+      <strong>GigSky：{campaign.title}</strong>
+      <p>{campaign.detail}</p>
+      <p class="kv">{campaign.period}。100 MB 適合先測連線，不是完整旅程的流量方案。</p>
+      <a href="/store/gigsky/">查看資格、啟用注意事項與官方入口 →</a>
+    </div>
+  ))}
 
   <h2>Klook eSIM 專區掛的碼</h2>
   <p class="kv">

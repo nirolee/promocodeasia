@@ -215,10 +215,12 @@ const showCardIndex = cardGroups.length >= 8;
 
   {campaigns.length > 0 && (
     <section id="campaigns-live">
-      <h2>進行中的活動（不需輸入碼）</h2>
+      <h2>官方活動與領券入口（非公開碼）</h2>
       {campaigns.map((c) => (
         <div class="campaign" data-campaign-expires={c.expiresAt ?? ''}>
           <strong>{c.title}</strong>
+          {c.kind && <span class="pill pill-none">{({ claim: '需自行領券', automatic: '指定商品折後價', trial: '免費試用' })[c.kind]}</span>}
+          {c.verifiedAt && <div class="kv">官方條款核對：{c.verifiedAt}・非付款實測</div>}
           <div class="kv">{c.period}</div>
           <p style="margin:8px 0 0">{c.detail}</p>
           <div class="kv">出處：<a href={c.source} rel="nofollow noopener" target="_blank">品牌官方頁</a></div>
@@ -244,11 +246,15 @@ const showCardIndex = cardGroups.length >= 8;
   </p>
 
   <h2>{brand.name}{term}怎麼用、不能用怎麼辦</h2>
+  {brand.howToUse ? (
+    <ul class="steps">{brand.howToUse.map((step) => <li>{step}</li>)}</ul>
+  ) : (
   <ul class="steps">
     <li><b>怎麼用</b>：結帳頁找「輸入{term}」欄位貼上；多數銀行碼要<b>先點進品牌的活動頁</b>再結帳，直接在結帳頁貼上會顯示無效。</li>
     <li><b>顯示不能用，先看這四項</b>：付款卡不符合「適用條件」（台灣的{term}絕大多數綁定特定發卡銀行）；沒有從活動頁進入；這個帳號本月已經用過（多數每月限用一次）；商品在排除清單裡（門票類、指定活動常被排除）。</li>
     <li>碼有數量上限、以結帳順序為準——月初和大促第一天最容易搶完；到期的碼這頁會自動下架，還看得到就是還沒過期。</li>
   </ul>
+  )}
   <p class="kv">這頁說的{term}，也就是常見說法裡的{alt}——同一回事，結帳時輸入的那串字。</p>
 
   {/* 品牌页之间的互链。2026-09-23 审计：之前每个品牌页只被首页一根线连着，页面之间互不认识。

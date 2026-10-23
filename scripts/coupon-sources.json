@@ -8,5 +8,9 @@
   {"id":"klook-deals","brand":"klook","url":"https://www.klook.com/zh-TW/deals/","parser":"generic","transport":"browser","interval_hours":72},
   {"id":"klook-wishlist","brand":"klook","url":"https://www.klook.com/zh-TW/tetris/promo/buildyouryearendwishlist/","parser":"generic","transport":"browser","interval_hours":168},
   {"id":"iherb-home","brand":"iherb","url":"https://tw.iherb.com/","parser":"generic","transport":"browser","interval_hours":168},
-  {"id":"casetify-home","brand":"casetify","url":"https://www.casetify.com/zh_TW/","parser":"generic","transport":"browser","interval_hours":168}
+  {"id":"casetify-home","brand":"casetify","url":"https://www.casetify.com/zh_TW/","parser":"generic","transport":"browser","interval_hours":168},
+  {"id":"airalo-apblog15","brand":"airalo","url":"https://www.airalo.com/campaign/APBLOG15","parser":"generic","transport":"browser","interval_hours":168},
+  {"id":"gigsky-trial","brand":"gigsky","url":"https://www.gigsky.com/free-offering","parser":"generic","transport":"browser","interval_hours":168},
+  {"id":"qeeq-coupon","brand":"qeeq","url":"https://www.qeeq.com/activity?id=8a36883a0a76f3f86cab30f9b7c2333e","parser":"generic","transport":"browser","interval_hours":168},
+  {"id":"tiqets-deals","brand":"tiqets","url":"https://www.tiqets.com/en/special-promotions-pc34/?groupby=country","parser":"generic","transport":"browser","interval_hours":168}
 ]

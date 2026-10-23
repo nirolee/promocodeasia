@@ -48,4 +48,6 @@ AFTEE 适配器按券卡明确月份、优惠金额与唯一当前订购/出发�
 
 ## 联盟基线与边界
 
+2026-10-23 剩余 23 个 Travelpayouts 项目的逐项结果见 `docs/operations/2026-10-23-travelpayouts-brands.md`：12 个明确禁止优惠码类流量，不因 Available 或营销新闻就重新接入。Airalo、QEEQ、Tiqets 使用本站生成的手动活动深链；GigSky 推广链接生成失败，仅保留官方免费试用，未接佣。没有平台恢复或新条款证据，不每日重复生成失败链接、索要专属码或重查这些限制。四个已发布优惠的官方来源已登记七天复核周期；通用解析的 records 为空不等于没有活动，仍须实际读快照条款，不把源码已有链接当作优惠必返佣。
+
 Trip.com 自营已接入本站 SID333721088，不同于被拒 Admitad Trip.com；Klook/CASETiFY 已接入，银行码仍依其条款。Admitad iHerb/Surfshark/Trip.com 及 Agoda 自营被拒，不重记为待审。Klook 15216/PROMOASIA 无新批准前不发；LinkHaitao/Partnerize 据新通知和后台核实。2026-10-23 用户改为允许安装本站项目 585872 的 Travelpayouts Drive，此授权覆盖此前“不安装”的约束；安装及配置结果见当日操作记录，不因源码有脚本就认定验证完成。默认保持自动换链、自动关键词链接、推荐块、预览与 Targeted offers 关闭，保护银行指定入口及现有自营/Admitad链接；日常任务不重复安装或重新打开自动功能。品牌可用状态、券站资格和正规推广链接仍须逐项核实。不自动接受新合同/提交身份税务银行信息/变更权限，不发邮件/Threads，不关机/改代理/购买。

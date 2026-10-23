@@ -101,12 +101,123 @@ export type Brand = {
   admitadProgram: string;
   /** 追踪链接；空字符串 = program 未批准，页面不渲染出站按钮 */
   affiliateUrl: string;
+  howToUse?: string[];
   codes: Code[];
   /** 非码类优惠（活动、信用卡回馈），同样要求出处 */
-  campaigns: { title: string; detail: string; period: string; source: string; expiresAt?: string }[];
+  campaigns: { title: string; detail: string; period: string; source: string; expiresAt?: string; verifiedAt?: string; kind?: 'claim' | 'automatic' | 'trial' }[];
 };
 
 export const BRANDS: Brand[] = [
+  {
+    slug: 'airalo',
+    name: 'Airalo',
+    nameEn: 'Airalo',
+    term: '折扣碼',
+    tagline: '旅遊 eSIM；先確認手機與目的地，再看折扣上限，並非不限額 85 折',
+    officialUrl: 'https://www.airalo.com/',
+    admitadProgram: 'Travelpayouts Airalo（本站項目已開放；一般合資格訂單 12%）',
+    affiliateUrl: 'https://airalo.tpx.gr/RkLxMg7X',
+    howToUse: [
+      '先確認手機支援 eSIM、沒有電信鎖，並確認所選方案涵蓋旅行目的地；折扣碼不會讓不相容的手機變得可用。',
+      'APBLOG15 在 Airalo 網站或 App 結帳輸入。官方文章以首購介紹，但活動細則列為持有帳戶且未使用本活動者，每人最多一次；實際資格依活動細則與結帳結果。',
+      '85 折最高省 US$3；US$20 的假設合資格金額已達上限，超過不會再按整筆金額省 15%。不能疊加其他活動，剩餘限量未經付款實測確認。',
+      '本頁合作入口導向同一張官方活動細則。本站是否取得佣金另依追蹤與商家規則，不能把品牌准入當作此碼保證返佣。',
+    ],
+    codes: [
+      {
+        code: 'APBLOG15',
+        benefit: 'eSIM 購買 85 折，最高折 US$3',
+        restriction: '需有 Airalo 帳戶且未使用本活動，每人 1 次；細則適用任一 eSIM 購買、未另列低消，不可併用其他活動。限信用卡／簽帳金融卡、PayPal、AliPay、Apple Pay 或 Google Pay；網站與 App 均可使用。總限量 10,000 次，用完可提前結束；官方文章以首購介紹，資格仍以活動細則及結帳為準。非付款實測，不保證尚有名額。',
+        category: '旅遊 eSIM',
+        verifiedAt: '2026-10-23',
+        source: 'https://www.airalo.com/campaign/APBLOG15',
+        expiresAt: '2030-04-30',
+        commissionable: 'unknown',
+      },
+    ],
+    campaigns: [],
+  },
+  {
+    slug: 'gigsky',
+    name: 'GigSky',
+    nameEn: 'GigSky',
+    term: '折扣碼',
+    tagline: '先查目的地是否可領免費試用；免費流量不等於整趟旅程都夠用',
+    officialUrl: 'https://www.gigsky.com/free-offering',
+    admitadProgram: 'Travelpayouts GigSky（券站允許，但本輪推廣連結生成失敗，暫不接佣）',
+    affiliateUrl: '',
+    howToUse: [
+      '這裡收錄的是官方免費試用入口，不是可以複製貼上的折扣碼，也不是所有人都能領取的 Visa 大流量福利。',
+      '先確認手機支援 eSIM 且未被電信商鎖定，再下載官方 App、建立帳戶並搜尋目的地；只有 App 顯示可領時才可使用該試用。',
+      '標準試用為 100 MB／7 天、官方標示不需信用卡；領取與啟用時間依 App 說明，不宜太早啟用。流量適合先測連線，不適合整趟看影片。',
+      'Visa 福利須另外驗證卡片、發卡地區與目的地，不等於一般台灣或香港 Visa 卡一律有 5 GB。本站沒有代領、註冊或開通實測。',
+    ],
+    codes: [],
+    campaigns: [
+      {
+        title: '標準免費 eSIM 試用：100 MB／7 天',
+        detail: '官方標準試用不需信用卡；請在 App 搜尋目的地並確認是否出現免費方案，且先確認手機支援與解鎖狀態。不是全目的地保證可領，也不是 Visa 專屬 1–5 GB 福利。免費試用不代表本站獲得佣金，本輪只提供原官方入口。',
+        period: '2026-10-23 核對；官網未列統一截止日，資格、計時與可領方案依 App 顯示',
+        source: 'https://www.gigsky.com/free-offering',
+        verifiedAt: '2026-10-23',
+        kind: 'trial',
+      },
+    ],
+  },
+  {
+    slug: 'qeeq',
+    name: 'QEEQ',
+    nameEn: 'QEEQ',
+    term: '折扣碼',
+    tagline: '國際租車領券；本次收錄英文站優惠，並非台幣門檻或全站通用碼',
+    officialUrl: 'https://www.qeeq.com/activity?id=8a36883a0a76f3f86cab30f9b7c2333e',
+    admitadProgram: 'Travelpayouts QEEQ（本站項目已開放；非 Diamond 合資格租車訂單 5%）',
+    affiliateUrl: 'https://qeeq.tpx.gr/rwBbQCgR',
+    howToUse: [
+      '由本頁官方活動或合作入口進入同一張英文活動頁，點 Get Coupon，再依平台要求登入或註冊；本站不提供他人的個人券碼。',
+      '這張券標示適用租車金額 US$300–20,000，95 折，領取後 7 天有效；不要把頁面其他位置的 App 首購活動或年末日期當作本券條件。',
+      '限英文站全額預付或部分預付訂單，依租車公司與可售供給；單程費、兒童座椅、GPS 等加購及到店支付費用不列入折扣。不可疊加其他券，每帳戶領取一次，不可轉讓。',
+      '領券成功、折扣成功與返佣是三件事；本站未代領或付款實測。一般訂單返佣須行程完成並經商家確認，Diamond 會員後續訂單另有排除，不保證本券訂單有佣金。',
+    ],
+    codes: [],
+    campaigns: [
+      {
+        title: '英文站租車領券：US$300–20,000 指定訂單 95 折',
+        detail: '需自行領取，每帳戶 1 次、不可轉讓，領取後 7 天有效。限英文站全額或部分預付訂單；依租車公司與供給，不含加購及到店支付費用，不可與其他券併用。這是個人領券入口，不是公開優惠碼；本頁沒有替你領券，也未保證與返佣同時成立。',
+        period: '2026-10-23 核對；本券官網未列統一領取截止日，領取後 7 天有效',
+        source: 'https://www.qeeq.com/activity?id=8a36883a0a76f3f86cab30f9b7c2333e',
+        verifiedAt: '2026-10-23',
+        kind: 'claim',
+      },
+    ],
+  },
+  {
+    slug: 'tiqets',
+    name: 'Tiqets',
+    nameEn: 'Tiqets',
+    term: '折扣碼',
+    tagline: '景點票券特價入口；指定商品自動顯示折後價，不是全站折扣碼',
+    officialUrl: 'https://www.tiqets.com/en/special-promotions-pc34/?groupby=country',
+    admitadProgram: 'Travelpayouts Tiqets（本站項目已開放；依商品 3.5%–8%）',
+    affiliateUrl: 'https://tiqets.tpx.gr/0AJi6aFu',
+    howToUse: [
+      '前往官方特價專區，選目的地與商品，再選日期、票種和人數；以最後顯示的可售價格為準，不需尋找一個全站通用碼。',
+      '本次實際看到新加坡纜車、蠟像館等部分票券有優惠標示；同一專區也有沒有折扣的商品，不能把全頁都當特價。',
+      '折扣、庫存、取消與改期規則按商品和場次而異；本頁不固定引用某個最低價或保證全時段有折扣。',
+      '透過本站合作入口完成的合資格訂單可能帶來佣金，比例依商品而異；是否有折扣和本站能否取得佣金是不同條件。未付款或入園實測。',
+    ],
+    codes: [],
+    campaigns: [
+      {
+        title: '景點票券官方特價專區：含新加坡指定商品',
+        detail: '部分商品直接標示折後價，不需公開碼；本次看到新加坡纜車、蠟像館等商品有折扣。優惠只限當下有折扣標示的票種與場次，專區內並非每項都特價；請核對日期、總價與取消條款，本站不保證最低價或名額。',
+        period: '2026-10-23 核對；無統一截止日，依各商品日期、票種與當時報價',
+        source: 'https://www.tiqets.com/en/special-promotions-pc34/?groupby=country',
+        verifiedAt: '2026-10-23',
+        kind: 'automatic',
+      },
+    ],
+  },
   {
     slug: 'klook',
     name: 'Klook 客路',
