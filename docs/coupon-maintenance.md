@@ -48,4 +48,4 @@ AFTEE 适配器按券卡明确月份、优惠金额与唯一当前订购/出发�
 
 ## 联盟基线与边界
 
-Trip.com 自营已接入本站 SID333721088，不同于被拒 Admitad Trip.com；Klook/CASETiFY 已接入，银行码仍依其条款。Admitad iHerb/Surfshark/Trip.com 及 Agoda 自营被拒，不重记为待审。Klook 15216/PROMOASIA 无新批准前不发；LinkHaitao/Partnerize 据新通知和后台核实。Travelpayouts 不安装 Drive/自动换链。不自动接受新合同/提交身份税务银行信息/变更权限，不发邮件/Threads，不关机/改代理/购买。
+Trip.com 自营已接入本站 SID333721088，不同于被拒 Admitad Trip.com；Klook/CASETiFY 已接入，银行码仍依其条款。Admitad iHerb/Surfshark/Trip.com 及 Agoda 自营被拒，不重记为待审。Klook 15216/PROMOASIA 无新批准前不发；LinkHaitao/Partnerize 据新通知和后台核实。2026-10-23 用户改为允许安装本站项目 585872 的 Travelpayouts Drive，此授权覆盖此前“不安装”的约束；安装及配置结果见当日操作记录，不因源码有脚本就认定验证完成。默认保持自动换链、自动关键词链接、推荐块、预览与 Targeted offers 关闭，保护银行指定入口及现有自营/Admitad链接；日常任务不重复安装或重新打开自动功能。品牌可用状态、券站资格和正规推广链接仍须逐项核实。不自动接受新合同/提交身份税务银行信息/变更权限，不发邮件/Threads，不关机/改代理/购买。
