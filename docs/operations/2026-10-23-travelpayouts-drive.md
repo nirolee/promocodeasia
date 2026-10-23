@@ -18,6 +18,25 @@
 
 本次安装不改变优惠码、核验日期、领取与银行指定入口。
 
+## 实际后台结果
+
+- 2026-10-23 已通过 Check Drive connection，安装引导自动跳入 Dashboard，Drive 设置显示本站域名与 Active。
+- 已关闭 Switch Links to Travelpayouts（含 affiliate networks 选项）、Display Smart Previews、Show Targeted Offers，页面分别显示 Off／turned off；Link Relevant Keywords 与 Insert Recommendations 对本站显示 Unavailable，不视作已启用，也不宣称手动关闭了这两项。
+- My Programs 的本站项目显示 Available 25；Unlock more 20 不等于全部待审或获批，不提交新解锁申请。
+- Available 包括 Klook、Yesim、Kiwitaxi、Localrent.com、Welcome Pickups、Tiqets、Kiwi.com、GigSky、Airalo、GetTransfer.com、Drimsim、GetRentacar.com、AirHelp、Go City、Economybookings.com、BikesBooking.com、QEEQ、WeGoTrip、AutoEurope (EU,UK)、Radical Storage、Aviasales、intui.travel、Compensair、Saily、KKday。此名单不是新增 25 组优惠或 25 个已经接站的品牌。
+
+## KKday 手动接入
+
+实际读取本站项目下 KKday 633 的详情与展开条款：目标地区 Worldwide、含繁体中文，Coupons or promo codes 为允许（Any channels）。品类佣金为 1%–5%，SIM/Wi-Fi 为 5%；实际需确认交易完成及平台归因，不保证每单返佣，更不据此把现有银行码的 unknown 改成 yes。
+
+通过官方链接工具、本站项目及 Sub ID `promocodeasia_kkday` 生成 `https://kkday.tpx.gr/CnAlm6r5`，目标为 `https://www.kkday.com/zh-tw`。浏览器测试确认落至该目标，带平台生成的追踪参数；落地中的底层 network 名不代表本站此前被拒的 Involve Asia 申请已批准。仅一般预订入口使用该链接，银行／支付优惠仍从各码原官方 source 进入。
+
+本次新增 1 个品牌的一般预订返佣入口，新增优惠码 0、修改优惠条件 0。KKday 10.10 活动新闻未提供本轮可完整核验的全部期限与限额，因此未新增新闻中的码。
+
+Klook 在此项目也开放，且后台显示十月部分体验品类 12%、酒店至年底 8%的活动费率；已生成首页与 eSIM 链接作为备用，但本轮不替换本站既有 Admitad 链接，不把新费率套给旧链接，也不变更任何银行支付码的返佣标记。其余品牌仍须具体核验，不为放链接创建无实质优惠的空品牌页。
+
+后台截图与完整可用名单保存在本轮本地 `D:/meixin/travelpayouts-install-20261023/evidence/`；最终生产生效状态以对应提交的 Cloudflare 部署和实际页面为准。
+
 ## 官方参考
 
 - [Drive 功能与设置](https://support.travelpayouts.com/hc/en-us/articles/32083238510482-Drive-functionalities-and-settings)

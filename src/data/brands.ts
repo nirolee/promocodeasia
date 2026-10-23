@@ -930,10 +930,10 @@ export const BRANDS: Brand[] = [
     name: 'KKday',
     nameEn: 'KKday',
     term: '折扣碼',
-    tagline: '在地體驗、一日遊、票券',
+    tagline: '在地體驗、一日遊、票券；銀行優惠請從各碼的「品牌官方頁」進入，合作連結供一般預訂使用',
     officialUrl: 'https://www.kkday.com/zh-tw',
-    admitadProgram: 'KKday WW（7.79%）',
-    affiliateUrl: '',
+    admitadProgram: 'Travelpayouts KKday（按品類 1%–5%）',
+    affiliateUrl: 'https://kkday.tpx.gr/CnAlm6r5',
     codes: [
       {
         code: 'CUBE26OCT240',
