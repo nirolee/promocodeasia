@@ -1,0 +1,738 @@
+{
+  "source": "https://www.kkday.com/zh-tw/promo/aftee",
+  "capturedAt": "2026-10-23T07:16:11.051Z",
+  "checkedAt": "2026-10-23",
+  "currentTerms": "KKday X AFTEE 活動內容\n訂購時間：2026/10/01 ~ 2026/10/31；出發時間至2026/12/31\n活動1：使用AFTEE支付，KKday全球商品輸入專屬折扣碼享 85 折，折扣金額上限 $80，限量 125 組，每個帳號限用 1 次。\n活動2：使用AFTEE支付，KKday 全球商品輸入專屬折扣碼滿 $1500 折 $100，限量 300 組，每個帳號限用 2 次。\n活動3：（會員日 10/8～10/1 ）限定使用AFTEE支付，KKday 全球商品輸入專屬折扣碼滿 $3000 折 $450，限量 100 組，每個帳號限用 1 次。\n活動4：使用AFTEE支付，KKday 體驗行程輸入專屬折扣碼滿 $5000 折 $600，限量 150 組，每個帳號限用 1 次。",
+  "assumptions": [
+    "假設已符合商品及支付條件的可折抵金額；不是實際報價或結帳驗證",
+    "台灣站新台幣情境，不跨幣別推算",
+    "各券已領、剩餘次數可用、商品及支付適用且未額滿才成立",
+    "不疊券、不計未核實回饋或佣金",
+    "小數以示範模型四捨五入至分，官方捨入以結帳為準"
+  ],
+  "offers": [
+    {
+      "code": "AFTEE85OCT",
+      "label": "85 折，最高折 NT$80",
+      "kind": "rate",
+      "discountPercent": 15,
+      "minimumCents": 0,
+      "capCents": 8000,
+      "uses": 1,
+      "quota": 125,
+      "experienceOnly": false
+    },
+    {
+      "code": "AFTEE100OCT",
+      "label": "滿 NT$1,500 折 NT$100",
+      "kind": "fixed",
+      "minimumCents": 150000,
+      "amountCents": 10000,
+      "uses": 2,
+      "quota": 300,
+      "experienceOnly": false
+    },
+    {
+      "code": "AFTEE600OCT",
+      "label": "體驗／行程滿 NT$5,000 折 NT$600",
+      "kind": "fixed",
+      "minimumCents": 500000,
+      "amountCents": 60000,
+      "uses": 1,
+      "quota": 150,
+      "experienceOnly": true
+    }
+  ],
+  "calculations": [
+    {
+      "amount": 500,
+      "global": [
+        {
+          "code": "AFTEE85OCT",
+          "label": "85 折，最高折 NT$80",
+          "kind": "rate",
+          "discountPercent": 15,
+          "minimumCents": 0,
+          "capCents": 8000,
+          "uses": 1,
+          "quota": 125,
+          "experienceOnly": false,
+          "applicable": true,
+          "reason": "僅計算條款金額；資格、名額與捨入仍以官方結帳為準",
+          "savingCents": 7500,
+          "payableCents": 42500
+        },
+        {
+          "code": "AFTEE100OCT",
+          "label": "滿 NT$1,500 折 NT$100",
+          "kind": "fixed",
+          "minimumCents": 150000,
+          "amountCents": 10000,
+          "uses": 2,
+          "quota": 300,
+          "experienceOnly": false,
+          "applicable": false,
+          "reason": "未達此券低消",
+          "savingCents": 0,
+          "payableCents": 50000
+        },
+        {
+          "code": "AFTEE600OCT",
+          "label": "體驗／行程滿 NT$5,000 折 NT$600",
+          "kind": "fixed",
+          "minimumCents": 500000,
+          "amountCents": 60000,
+          "uses": 1,
+          "quota": 150,
+          "experienceOnly": true,
+          "applicable": false,
+          "reason": "僅限符合活動的體驗／行程商品",
+          "savingCents": 0,
+          "payableCents": 50000
+        }
+      ],
+      "experience": [
+        {
+          "code": "AFTEE85OCT",
+          "label": "85 折，最高折 NT$80",
+          "kind": "rate",
+          "discountPercent": 15,
+          "minimumCents": 0,
+          "capCents": 8000,
+          "uses": 1,
+          "quota": 125,
+          "experienceOnly": false,
+          "applicable": true,
+          "reason": "僅計算條款金額；資格、名額與捨入仍以官方結帳為準",
+          "savingCents": 7500,
+          "payableCents": 42500
+        },
+        {
+          "code": "AFTEE100OCT",
+          "label": "滿 NT$1,500 折 NT$100",
+          "kind": "fixed",
+          "minimumCents": 150000,
+          "amountCents": 10000,
+          "uses": 2,
+          "quota": 300,
+          "experienceOnly": false,
+          "applicable": false,
+          "reason": "未達此券低消",
+          "savingCents": 0,
+          "payableCents": 50000
+        },
+        {
+          "code": "AFTEE600OCT",
+          "label": "體驗／行程滿 NT$5,000 折 NT$600",
+          "kind": "fixed",
+          "minimumCents": 500000,
+          "amountCents": 60000,
+          "uses": 1,
+          "quota": 150,
+          "experienceOnly": true,
+          "applicable": false,
+          "reason": "未達此券低消",
+          "savingCents": 0,
+          "payableCents": 50000
+        }
+      ]
+    },
+    {
+      "amount": 1000,
+      "global": [
+        {
+          "code": "AFTEE85OCT",
+          "label": "85 折，最高折 NT$80",
+          "kind": "rate",
+          "discountPercent": 15,
+          "minimumCents": 0,
+          "capCents": 8000,
+          "uses": 1,
+          "quota": 125,
+          "experienceOnly": false,
+          "applicable": true,
+          "reason": "僅計算條款金額；資格、名額與捨入仍以官方結帳為準",
+          "savingCents": 8000,
+          "payableCents": 92000
+        },
+        {
+          "code": "AFTEE100OCT",
+          "label": "滿 NT$1,500 折 NT$100",
+          "kind": "fixed",
+          "minimumCents": 150000,
+          "amountCents": 10000,
+          "uses": 2,
+          "quota": 300,
+          "experienceOnly": false,
+          "applicable": false,
+          "reason": "未達此券低消",
+          "savingCents": 0,
+          "payableCents": 100000
+        },
+        {
+          "code": "AFTEE600OCT",
+          "label": "體驗／行程滿 NT$5,000 折 NT$600",
+          "kind": "fixed",
+          "minimumCents": 500000,
+          "amountCents": 60000,
+          "uses": 1,
+          "quota": 150,
+          "experienceOnly": true,
+          "applicable": false,
+          "reason": "僅限符合活動的體驗／行程商品",
+          "savingCents": 0,
+          "payableCents": 100000
+        }
+      ],
+      "experience": [
+        {
+          "code": "AFTEE85OCT",
+          "label": "85 折，最高折 NT$80",
+          "kind": "rate",
+          "discountPercent": 15,
+          "minimumCents": 0,
+          "capCents": 8000,
+          "uses": 1,
+          "quota": 125,
+          "experienceOnly": false,
+          "applicable": true,
+          "reason": "僅計算條款金額；資格、名額與捨入仍以官方結帳為準",
+          "savingCents": 8000,
+          "payableCents": 92000
+        },
+        {
+          "code": "AFTEE100OCT",
+          "label": "滿 NT$1,500 折 NT$100",
+          "kind": "fixed",
+          "minimumCents": 150000,
+          "amountCents": 10000,
+          "uses": 2,
+          "quota": 300,
+          "experienceOnly": false,
+          "applicable": false,
+          "reason": "未達此券低消",
+          "savingCents": 0,
+          "payableCents": 100000
+        },
+        {
+          "code": "AFTEE600OCT",
+          "label": "體驗／行程滿 NT$5,000 折 NT$600",
+          "kind": "fixed",
+          "minimumCents": 500000,
+          "amountCents": 60000,
+          "uses": 1,
+          "quota": 150,
+          "experienceOnly": true,
+          "applicable": false,
+          "reason": "未達此券低消",
+          "savingCents": 0,
+          "payableCents": 100000
+        }
+      ]
+    },
+    {
+      "amount": 1400,
+      "global": [
+        {
+          "code": "AFTEE85OCT",
+          "label": "85 折，最高折 NT$80",
+          "kind": "rate",
+          "discountPercent": 15,
+          "minimumCents": 0,
+          "capCents": 8000,
+          "uses": 1,
+          "quota": 125,
+          "experienceOnly": false,
+          "applicable": true,
+          "reason": "僅計算條款金額；資格、名額與捨入仍以官方結帳為準",
+          "savingCents": 8000,
+          "payableCents": 132000
+        },
+        {
+          "code": "AFTEE100OCT",
+          "label": "滿 NT$1,500 折 NT$100",
+          "kind": "fixed",
+          "minimumCents": 150000,
+          "amountCents": 10000,
+          "uses": 2,
+          "quota": 300,
+          "experienceOnly": false,
+          "applicable": false,
+          "reason": "未達此券低消",
+          "savingCents": 0,
+          "payableCents": 140000
+        },
+        {
+          "code": "AFTEE600OCT",
+          "label": "體驗／行程滿 NT$5,000 折 NT$600",
+          "kind": "fixed",
+          "minimumCents": 500000,
+          "amountCents": 60000,
+          "uses": 1,
+          "quota": 150,
+          "experienceOnly": true,
+          "applicable": false,
+          "reason": "僅限符合活動的體驗／行程商品",
+          "savingCents": 0,
+          "payableCents": 140000
+        }
+      ],
+      "experience": [
+        {
+          "code": "AFTEE85OCT",
+          "label": "85 折，最高折 NT$80",
+          "kind": "rate",
+          "discountPercent": 15,
+          "minimumCents": 0,
+          "capCents": 8000,
+          "uses": 1,
+          "quota": 125,
+          "experienceOnly": false,
+          "applicable": true,
+          "reason": "僅計算條款金額；資格、名額與捨入仍以官方結帳為準",
+          "savingCents": 8000,
+          "payableCents": 132000
+        },
+        {
+          "code": "AFTEE100OCT",
+          "label": "滿 NT$1,500 折 NT$100",
+          "kind": "fixed",
+          "minimumCents": 150000,
+          "amountCents": 10000,
+          "uses": 2,
+          "quota": 300,
+          "experienceOnly": false,
+          "applicable": false,
+          "reason": "未達此券低消",
+          "savingCents": 0,
+          "payableCents": 140000
+        },
+        {
+          "code": "AFTEE600OCT",
+          "label": "體驗／行程滿 NT$5,000 折 NT$600",
+          "kind": "fixed",
+          "minimumCents": 500000,
+          "amountCents": 60000,
+          "uses": 1,
+          "quota": 150,
+          "experienceOnly": true,
+          "applicable": false,
+          "reason": "未達此券低消",
+          "savingCents": 0,
+          "payableCents": 140000
+        }
+      ]
+    },
+    {
+      "amount": 1500,
+      "global": [
+        {
+          "code": "AFTEE85OCT",
+          "label": "85 折，最高折 NT$80",
+          "kind": "rate",
+          "discountPercent": 15,
+          "minimumCents": 0,
+          "capCents": 8000,
+          "uses": 1,
+          "quota": 125,
+          "experienceOnly": false,
+          "applicable": true,
+          "reason": "僅計算條款金額；資格、名額與捨入仍以官方結帳為準",
+          "savingCents": 8000,
+          "payableCents": 142000
+        },
+        {
+          "code": "AFTEE100OCT",
+          "label": "滿 NT$1,500 折 NT$100",
+          "kind": "fixed",
+          "minimumCents": 150000,
+          "amountCents": 10000,
+          "uses": 2,
+          "quota": 300,
+          "experienceOnly": false,
+          "applicable": true,
+          "reason": "僅計算條款金額；資格、名額與捨入仍以官方結帳為準",
+          "savingCents": 10000,
+          "payableCents": 140000
+        },
+        {
+          "code": "AFTEE600OCT",
+          "label": "體驗／行程滿 NT$5,000 折 NT$600",
+          "kind": "fixed",
+          "minimumCents": 500000,
+          "amountCents": 60000,
+          "uses": 1,
+          "quota": 150,
+          "experienceOnly": true,
+          "applicable": false,
+          "reason": "僅限符合活動的體驗／行程商品",
+          "savingCents": 0,
+          "payableCents": 150000
+        }
+      ],
+      "experience": [
+        {
+          "code": "AFTEE85OCT",
+          "label": "85 折，最高折 NT$80",
+          "kind": "rate",
+          "discountPercent": 15,
+          "minimumCents": 0,
+          "capCents": 8000,
+          "uses": 1,
+          "quota": 125,
+          "experienceOnly": false,
+          "applicable": true,
+          "reason": "僅計算條款金額；資格、名額與捨入仍以官方結帳為準",
+          "savingCents": 8000,
+          "payableCents": 142000
+        },
+        {
+          "code": "AFTEE100OCT",
+          "label": "滿 NT$1,500 折 NT$100",
+          "kind": "fixed",
+          "minimumCents": 150000,
+          "amountCents": 10000,
+          "uses": 2,
+          "quota": 300,
+          "experienceOnly": false,
+          "applicable": true,
+          "reason": "僅計算條款金額；資格、名額與捨入仍以官方結帳為準",
+          "savingCents": 10000,
+          "payableCents": 140000
+        },
+        {
+          "code": "AFTEE600OCT",
+          "label": "體驗／行程滿 NT$5,000 折 NT$600",
+          "kind": "fixed",
+          "minimumCents": 500000,
+          "amountCents": 60000,
+          "uses": 1,
+          "quota": 150,
+          "experienceOnly": true,
+          "applicable": false,
+          "reason": "未達此券低消",
+          "savingCents": 0,
+          "payableCents": 150000
+        }
+      ]
+    },
+    {
+      "amount": 3000,
+      "global": [
+        {
+          "code": "AFTEE85OCT",
+          "label": "85 折，最高折 NT$80",
+          "kind": "rate",
+          "discountPercent": 15,
+          "minimumCents": 0,
+          "capCents": 8000,
+          "uses": 1,
+          "quota": 125,
+          "experienceOnly": false,
+          "applicable": true,
+          "reason": "僅計算條款金額；資格、名額與捨入仍以官方結帳為準",
+          "savingCents": 8000,
+          "payableCents": 292000
+        },
+        {
+          "code": "AFTEE100OCT",
+          "label": "滿 NT$1,500 折 NT$100",
+          "kind": "fixed",
+          "minimumCents": 150000,
+          "amountCents": 10000,
+          "uses": 2,
+          "quota": 300,
+          "experienceOnly": false,
+          "applicable": true,
+          "reason": "僅計算條款金額；資格、名額與捨入仍以官方結帳為準",
+          "savingCents": 10000,
+          "payableCents": 290000
+        },
+        {
+          "code": "AFTEE600OCT",
+          "label": "體驗／行程滿 NT$5,000 折 NT$600",
+          "kind": "fixed",
+          "minimumCents": 500000,
+          "amountCents": 60000,
+          "uses": 1,
+          "quota": 150,
+          "experienceOnly": true,
+          "applicable": false,
+          "reason": "僅限符合活動的體驗／行程商品",
+          "savingCents": 0,
+          "payableCents": 300000
+        }
+      ],
+      "experience": [
+        {
+          "code": "AFTEE85OCT",
+          "label": "85 折，最高折 NT$80",
+          "kind": "rate",
+          "discountPercent": 15,
+          "minimumCents": 0,
+          "capCents": 8000,
+          "uses": 1,
+          "quota": 125,
+          "experienceOnly": false,
+          "applicable": true,
+          "reason": "僅計算條款金額；資格、名額與捨入仍以官方結帳為準",
+          "savingCents": 8000,
+          "payableCents": 292000
+        },
+        {
+          "code": "AFTEE100OCT",
+          "label": "滿 NT$1,500 折 NT$100",
+          "kind": "fixed",
+          "minimumCents": 150000,
+          "amountCents": 10000,
+          "uses": 2,
+          "quota": 300,
+          "experienceOnly": false,
+          "applicable": true,
+          "reason": "僅計算條款金額；資格、名額與捨入仍以官方結帳為準",
+          "savingCents": 10000,
+          "payableCents": 290000
+        },
+        {
+          "code": "AFTEE600OCT",
+          "label": "體驗／行程滿 NT$5,000 折 NT$600",
+          "kind": "fixed",
+          "minimumCents": 500000,
+          "amountCents": 60000,
+          "uses": 1,
+          "quota": 150,
+          "experienceOnly": true,
+          "applicable": false,
+          "reason": "未達此券低消",
+          "savingCents": 0,
+          "payableCents": 300000
+        }
+      ]
+    },
+    {
+      "amount": 5000,
+      "global": [
+        {
+          "code": "AFTEE85OCT",
+          "label": "85 折，最高折 NT$80",
+          "kind": "rate",
+          "discountPercent": 15,
+          "minimumCents": 0,
+          "capCents": 8000,
+          "uses": 1,
+          "quota": 125,
+          "experienceOnly": false,
+          "applicable": true,
+          "reason": "僅計算條款金額；資格、名額與捨入仍以官方結帳為準",
+          "savingCents": 8000,
+          "payableCents": 492000
+        },
+        {
+          "code": "AFTEE100OCT",
+          "label": "滿 NT$1,500 折 NT$100",
+          "kind": "fixed",
+          "minimumCents": 150000,
+          "amountCents": 10000,
+          "uses": 2,
+          "quota": 300,
+          "experienceOnly": false,
+          "applicable": true,
+          "reason": "僅計算條款金額；資格、名額與捨入仍以官方結帳為準",
+          "savingCents": 10000,
+          "payableCents": 490000
+        },
+        {
+          "code": "AFTEE600OCT",
+          "label": "體驗／行程滿 NT$5,000 折 NT$600",
+          "kind": "fixed",
+          "minimumCents": 500000,
+          "amountCents": 60000,
+          "uses": 1,
+          "quota": 150,
+          "experienceOnly": true,
+          "applicable": false,
+          "reason": "僅限符合活動的體驗／行程商品",
+          "savingCents": 0,
+          "payableCents": 500000
+        }
+      ],
+      "experience": [
+        {
+          "code": "AFTEE85OCT",
+          "label": "85 折，最高折 NT$80",
+          "kind": "rate",
+          "discountPercent": 15,
+          "minimumCents": 0,
+          "capCents": 8000,
+          "uses": 1,
+          "quota": 125,
+          "experienceOnly": false,
+          "applicable": true,
+          "reason": "僅計算條款金額；資格、名額與捨入仍以官方結帳為準",
+          "savingCents": 8000,
+          "payableCents": 492000
+        },
+        {
+          "code": "AFTEE100OCT",
+          "label": "滿 NT$1,500 折 NT$100",
+          "kind": "fixed",
+          "minimumCents": 150000,
+          "amountCents": 10000,
+          "uses": 2,
+          "quota": 300,
+          "experienceOnly": false,
+          "applicable": true,
+          "reason": "僅計算條款金額；資格、名額與捨入仍以官方結帳為準",
+          "savingCents": 10000,
+          "payableCents": 490000
+        },
+        {
+          "code": "AFTEE600OCT",
+          "label": "體驗／行程滿 NT$5,000 折 NT$600",
+          "kind": "fixed",
+          "minimumCents": 500000,
+          "amountCents": 60000,
+          "uses": 1,
+          "quota": 150,
+          "experienceOnly": true,
+          "applicable": true,
+          "reason": "僅計算條款金額；資格、名額與捨入仍以官方結帳為準",
+          "savingCents": 60000,
+          "payableCents": 440000
+        }
+      ]
+    },
+    {
+      "amount": 10000,
+      "global": [
+        {
+          "code": "AFTEE85OCT",
+          "label": "85 折，最高折 NT$80",
+          "kind": "rate",
+          "discountPercent": 15,
+          "minimumCents": 0,
+          "capCents": 8000,
+          "uses": 1,
+          "quota": 125,
+          "experienceOnly": false,
+          "applicable": true,
+          "reason": "僅計算條款金額；資格、名額與捨入仍以官方結帳為準",
+          "savingCents": 8000,
+          "payableCents": 992000
+        },
+        {
+          "code": "AFTEE100OCT",
+          "label": "滿 NT$1,500 折 NT$100",
+          "kind": "fixed",
+          "minimumCents": 150000,
+          "amountCents": 10000,
+          "uses": 2,
+          "quota": 300,
+          "experienceOnly": false,
+          "applicable": true,
+          "reason": "僅計算條款金額；資格、名額與捨入仍以官方結帳為準",
+          "savingCents": 10000,
+          "payableCents": 990000
+        },
+        {
+          "code": "AFTEE600OCT",
+          "label": "體驗／行程滿 NT$5,000 折 NT$600",
+          "kind": "fixed",
+          "minimumCents": 500000,
+          "amountCents": 60000,
+          "uses": 1,
+          "quota": 150,
+          "experienceOnly": true,
+          "applicable": false,
+          "reason": "僅限符合活動的體驗／行程商品",
+          "savingCents": 0,
+          "payableCents": 1000000
+        }
+      ],
+      "experience": [
+        {
+          "code": "AFTEE85OCT",
+          "label": "85 折，最高折 NT$80",
+          "kind": "rate",
+          "discountPercent": 15,
+          "minimumCents": 0,
+          "capCents": 8000,
+          "uses": 1,
+          "quota": 125,
+          "experienceOnly": false,
+          "applicable": true,
+          "reason": "僅計算條款金額；資格、名額與捨入仍以官方結帳為準",
+          "savingCents": 8000,
+          "payableCents": 992000
+        },
+        {
+          "code": "AFTEE100OCT",
+          "label": "滿 NT$1,500 折 NT$100",
+          "kind": "fixed",
+          "minimumCents": 150000,
+          "amountCents": 10000,
+          "uses": 2,
+          "quota": 300,
+          "experienceOnly": false,
+          "applicable": true,
+          "reason": "僅計算條款金額；資格、名額與捨入仍以官方結帳為準",
+          "savingCents": 10000,
+          "payableCents": 990000
+        },
+        {
+          "code": "AFTEE600OCT",
+          "label": "體驗／行程滿 NT$5,000 折 NT$600",
+          "kind": "fixed",
+          "minimumCents": 500000,
+          "amountCents": 60000,
+          "uses": 1,
+          "quota": 150,
+          "experienceOnly": true,
+          "applicable": true,
+          "reason": "僅計算條款金額；資格、名額與捨入仍以官方結帳為準",
+          "savingCents": 60000,
+          "payableCents": 940000
+        }
+      ]
+    }
+  ],
+  "topUp": {
+    "beforeAmount": 1400,
+    "beforePayable": 1320,
+    "afterAmount": 1500,
+    "afterPayable": 1400,
+    "extraSpending": 80
+  },
+  "excluded": [
+    "AFTEE450OCT：會員日10/8～10/1日期矛盾，不參與比較"
+  ],
+  "imageMethod": "從相同計算模組產出數字，以原生HTML/CSS渲染；不是官方截圖或付款實測",
+  "actualRemainingQuota": "未知",
+  "actualCommission": "未知",
+  "checks": [
+    {
+      "name": "discount-value-comparison",
+      "width": 1200,
+      "height": 820,
+      "overflow": false
+    },
+    {
+      "name": "discount-value-topup",
+      "width": 1200,
+      "height": 700,
+      "overflow": false
+    },
+    {
+      "name": "discount-value-og",
+      "width": 1200,
+      "height": 630,
+      "overflow": false
+    },
+    {
+      "name": "discount-value-share",
+      "width": 1080,
+      "height": 1350,
+      "overflow": false
+    }
+  ]
+}

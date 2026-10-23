@@ -1,0 +1,137 @@
+---
+import Base from '../layouts/Base.astro';
+import { COMPARISON, OFFERS, compareOffers, campaignActive, taipeiDate, money } from '../lib/coupon-math.mjs';
+
+const active = campaignActive(taipeiDate());
+const amounts = [500, 1000, 1400, 1500, 3000, 5000];
+const rows = amounts.map(amount => ({ amount, offers: compareOffers(amount * 100, false) }));
+const title = '折扣越大不一定越省：KKday 85 折 vs 滿額折，附實省試算 - PromoCodeAsia';
+---
+<Base title={title}
+  description="用 KKday 十月 AFTEE 真實條款比較：85 折最高折 NT$80，滿 NT$1,500 折 NT$100。附實省圖、金額試算與湊單成本對照，清楚區分商品資格、限量和活動期限，非付款實測。"
+  image="/images/discount-value-og.png"
+  imageAlt="同為假設NT$1,500可折抵金額，85折封頂省80，滿額折省100；兩券皆適用時的條款計算，非付款實測"
+  breadcrumb={[{ name: '首頁', url: '/' }, { name: '折扣與實省金額', url: '/discount-value/' }]}>
+  <article class="value-article">
+    <header class="article-head">
+      <p class="byline">官方條款核對 {COMPARISON.checkedAt} · 2026 年 10 月算例</p>
+      <h1>折扣看起來更大，<br />不代表你真的省更多。</h1>
+      <p class="opening">同樣假設有 NT$1,500 可折抵金額，85 折聽起來像能省 NT$225。但這張券最高只折 NT$80；另一張「滿 NT$1,500 折 NT$100」，反而多省 NT$20。</p>
+      <p class="boundary"><strong>這是有前提的規則比較：</strong>僅在兩張券都已領到、仍有名額、剩餘次數可用、同一商品與 AFTEE 支付均符合時成立。不是結帳成功保證，也不是全站最低價。</p>
+    </header>
+
+    <div class:list={['period', { 'is-ended': !active }]} id="period-status" role="status">
+      {active ? <p>本期官方訂購區間為 2026/10/01–10/31，出發至 2026/12/31。下方是規則試算，剩餘名額未知。</p> : <p>本期活動已結束或尚未開始；下方只保留歷史條款算例，不代表目前可領用。</p>}
+    </div>
+
+    <figure class="lead-figure">
+      <a href="/images/discount-value-comparison.png"><img src="/images/discount-value-comparison.png" width="1200" height="820" alt="以相同1500元可折抵金額計算：85折券因80元上限只省80，滿1500折100券省100，實付分別1420和1400" /></a>
+      <figcaption>本站依實際十月條款製作的計算圖。NT$1,500 是假設金額，不是某個行程的真實報價；兩券不可在此模型中相加。</figcaption>
+    </figure>
+
+    <h2>先看上限，再看折數</h2>
+    <p>85 折代表原價付 85%、折抵 15%；但如果最高只能折 NT$80，金額增加後就不會一直省 15%。</p>
+    <div class="formula"><p><strong>85 折券的規則折抵</strong>＝ min（可折抵金額 × 15%，NT$80）</p><p><strong>滿額券的規則折抵</strong>＝ 金額達 NT$1,500 時折 NT$100；未達門檻不適用</p></div>
+    <p>可折抵金額不一定等於你看到的購物車總額：商品排除、費用與其他條件仍要看官方結帳。以下假設金額已符合該券計算基礎，且以台灣站新台幣情境示範。</p>
+
+    <div class="table-scroll">
+      <table><caption>同一金額、兩券皆適用時的規則比較</caption><thead><tr><th scope="col">假設可折抵金額</th><th scope="col">85 折券省下</th><th scope="col">滿額券省下</th><th scope="col">兩者比較</th></tr></thead><tbody>
+        {rows.map(row => <tr><th scope="row">{money(row.amount * 100)}</th><td>{money(row.offers[0].savingCents)}</td><td>{row.offers[1].applicable ? money(row.offers[1].savingCents) : '未達 NT$1,500 門檻'}</td><td>{row.offers[1].applicable ? '滿額券多省 NT$20' : '先看是否能用 85 折券'}</td></tr>)}
+      </tbody></table>
+    </div>
+    <p>例如 NT$1,500 時，省 NT$80 約等於總額的 5.33%；省 NT$100 約等於 6.67%。這不是另一個官方優惠，只是把相同規則換成容易比較的實省比例。</p>
+
+    <section class="calculator" aria-labelledby="calculator-heading">
+      <h2 id="calculator-heading">換成你的假設金額算一次</h2>
+      <p>只在瀏覽器計算，不傳送金額。結果不查你的帳戶、實際商品、已領券、剩餘名額或付款額度。</p>
+      <form id="value-form"><label for="value-amount">假設可折抵金額（新台幣）</label><div class="amount-row"><span aria-hidden="true">NT$</span><input id="value-amount" type="text" inputmode="decimal" value="1500" maxlength="12" autocomplete="off" aria-describedby="amount-help amount-error" /><button type="submit">計算實省</button></div><p id="amount-help" class="small">接受大於 0、最多兩位小數及 NT$1,000,000 以內的金額；不需要填訂單或個人資料。</p><label class="category-choice"><input id="value-experience" type="checkbox" />另假設本次為符合 AFTEE600OCT 活動的體驗／行程商品</label></form>
+      <p id="amount-error" class="error" role="alert"></p>
+      <div id="value-results" aria-live="polite"><p>預設 NT$1,500：若兩券都適用，85 折券省 NT$80，滿額券省 NT$100，兩者差 NT$20。開啟 JavaScript 可試其他金額；關閉時仍可看上方完整表格。</p></div>
+      <p class="small">模型以「分」計算，小數四捨五入至分，只是示範假設；官方結帳的捨入、可折抵金額與適用性可能不同。此處不保證哪張券現在仍可用。</p>
+    </section>
+
+    <h2>多買 NT$100，只多折 NT$20，真的是省錢嗎？</h2>
+    <p>假設原本要買的符合商品金額是 NT$1,400，使用 85 折券後因封頂只折 NT$80，示範實付為 NT$1,320。</p>
+    <p>若為了湊到 NT$1,500 而多買 NT$100，再用滿額折 NT$100，示範實付反而變成 NT$1,400。<strong>折抵多了 NT$20，但實際支出多了 NT$80。</strong></p>
+    <figure><a href="/images/discount-value-topup.png"><img src="/images/discount-value-topup.png" width="1200" height="700" loading="lazy" alt="原本買1400折80實付1320；為了多折20而加買100後，買1500折100實付1400，支出增加80" /></a><figcaption>這是依相同規則計算的假設對照，不是兩筆真實訂單。原本就需要的商品與臨時為了優惠加買的商品，價值也不同。</figcaption></figure>
+    <p>不是所有湊單都不划算。請比較「新增支出 − 新增折抵」，再問加購項目是不是本來就需要，而不是只看省下的數字變大了。</p>
+
+    <h2>第三張省 NT$600，為什麼不直接排第一？</h2>
+    <p>AFTEE600OCT 的條款是「全球體驗、行程類商品滿 NT$5,000 折 NT$600」。商品範圍比前兩張不同，金額也有門檻。不能因為 NT$600 數字最大，就拿它推薦給所有住宿、交通或 eSIM 訂單。</p>
+    <p>所以試算器預設不把它列入比較；只有你勾選「另假設為符合活動的體驗／行程」才展示其條件式結果。這個勾選不代表我們替你核實商品或保證能領到券。</p>
+
+    <h2>三張券的規則與不能省略的前提</h2>
+    <div class="offer-rules">{OFFERS.map(offer => <section class="rule"><h3><code>{offer.code}</code></h3><p><strong>{offer.label}</strong></p><p>{offer.experienceOnly ? '僅符合活動的體驗／行程商品；不是全站通用。' : '官方活動稱全球商品，個別商品能否使用仍以官方結帳為準。'}</p><p>官方本期總限量 {offer.quota} 組，每帳號限用 {offer.uses} 次。這是公告配額，不是剩餘庫存。</p></section>)}</div>
+    <ul class="conditions"><li>都需 AFTEE 付款，先從官方活動頁領取相應券，並滿足本次帳戶與商品條件。</li><li>AFTEE 額度和繳費仍依服務規則，不因文章試算就代表申請或付款一定通過；不要為多折一點增加不需要的支出。</li><li>訂購期為 2026/10/01–10/31；出發至 2026/12/31。本文沒有把會員日 AFTEE450OCT 的矛盾日期自行補齊。</li><li>只比較各自單獨使用，未核實可疊加其他優惠、點數、回饋或返佣；不把銀行／支付入口換成一般合作連結。</li><li>即使活動期間尚未結束，也可能已額滿、已用完次數，或你的商品不適用；需要回官方頁及結帳確認。</li></ul>
+    <div class="article-actions"><a id="official-claim-link" class="js-source official-link" href={COMPARISON.source} data-brand="kkday" target="_blank" rel="noopener" hidden>回官方活動頁看條款與領券</a><a href="/store/kkday/">查看 KKday 其他優惠</a><a href="/changes/">查看近期變動與到期提醒</a><a href="/images/discount-value-share.png" download>下載可收藏對照圖</a></div>
+
+    <h2>證據、方法與限制</h2>
+    <p>本篇的新增價值是把同一期公開條款轉成可重算的實省表、圖與金額試算，再把湊單的新增支出分開計算。不是編輯拿兩張無法同時符合的券硬比折數。</p>
+    <ul><li>主要來源：<a class="js-source" href={COMPARISON.source} data-brand="kkday" target="_blank" rel="noopener">KKday × AFTEE 官方活動頁</a>，實際讀取 2026/10/01–10/31 區塊，不使用同頁九月的配額。</li><li>方法與本期摘錄：<a href="/evidence/discount-value-20261023.json">本次核驗與計算記錄</a>；<a href="/evidence/discount-value-calculations.csv" download>下載範例計算表 CSV</a>。</li><li>圖表是本站根據條款計算和渲染，不是假造官方截圖；金額是假設算例，未建立訂單、未付款實測，也沒取得庫存或已結算佣金證據。</li><li>計算器不傳送輸入金額。網站既有流量統計沿用原設定；官方來源點擊不當成購買轉化。</li></ul>
+    <p class="conclusion">先確認你能用，再算真正省多少。<br /><strong>折數是入口，實省金額與新增支出才是決策。</strong></p>
+  </article>
+</Base>
+
+<script>
+  import { compareOffers, campaignActive, taipeiDate, money, parseAmount } from '../lib/coupon-math.mjs';
+
+  const form = document.querySelector<HTMLFormElement>('#value-form');
+  const amount = document.querySelector<HTMLInputElement>('#value-amount');
+  const experience = document.querySelector<HTMLInputElement>('#value-experience');
+  const result = document.querySelector<HTMLDivElement>('#value-results');
+  const error = document.querySelector<HTMLParagraphElement>('#amount-error');
+  const period = document.querySelector<HTMLDivElement>('#period-status');
+  const claim = document.querySelector<HTMLAnchorElement>('#official-claim-link');
+
+  function render() {
+    if (!amount || !experience || !result || !error) return;
+    const cents = parseAmount(amount.value);
+    const activeNow = campaignActive(taipeiDate());
+    if (claim) claim.hidden = !activeNow;
+    if (period && !activeNow) {
+      period.classList.add('is-ended');
+      period.textContent = '本期活動已結束或尚未開始；下方只保留歷史條款算例，不代表目前可領用。';
+    }
+    result.replaceChildren();
+    if (cents === null) {
+      error.textContent = '請輸入大於 0、最多兩位小數、NT$1,000,000 以內的數字，不含逗號或其他文字。';
+      amount.setAttribute('aria-invalid', 'true');
+      return;
+    }
+    error.textContent = '';
+    amount.removeAttribute('aria-invalid');
+    const offers = compareOffers(cents, experience.checked);
+    const heading = document.createElement('p');
+    heading.className = 'result-heading';
+    heading.textContent = (activeNow ? '假設各項條件均成立：' : '歷史算例，不能作為目前優惠：') + money(cents);
+    result.appendChild(heading);
+    for (const offer of offers) {
+      const item = document.createElement('p');
+      item.className = 'result-line';
+      item.dataset.offerCode = offer.code;
+      item.dataset.savingCents = String(offer.savingCents);
+      item.textContent = offer.applicable ? `${offer.code}：規則估算省 ${money(offer.savingCents)}，餘額 ${money(offer.payableCents)}。可用性未確認。` : `${offer.code}：${offer.reason}，不列作可用比較。`;
+      result.appendChild(item);
+    }
+    const eligible = offers.filter(offer => offer.applicable);
+    const best = eligible.reduce((largest, offer) => Math.max(largest, offer.savingCents), 0);
+    const summary = document.createElement('p');
+    summary.className = 'result-summary';
+    summary.textContent = eligible.length ? `僅在上述適用假設下，最大規則折抵為 ${money(best)}；這不是券仍可領、結帳成功或最低總價保證。` : '未達比較券的條件；請先確認商品、支付和門檻。';
+    result.appendChild(summary);
+  }
+
+  form?.addEventListener('submit', event => { event.preventDefault(); render(); });
+  experience?.addEventListener('change', render);
+  window.addEventListener('pageshow', render);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) render(); });
+  claim?.addEventListener('click', event => { if (!campaignActive(taipeiDate())) { event.preventDefault(); render(); } });
+  render();
+</script>
+
+<style>
+  .value-article{font-family:'Microsoft JhengHei','PingFang TC','Noto Sans TC',system-ui,sans-serif}
+  .value-article{max-width:900px;margin:auto;color:#233448;font-size:17px;line-height:1.85}.article-head{padding:12px 0 20px}.byline{font-size:14px;color:#627388}.value-article h1{font-size:clamp(32px,5vw,48px);line-height:1.28;letter-spacing:-.025em;margin:18px 0 24px}.opening{font-size:21px;max-width:40em}.boundary{font-size:15px;border-left:4px solid #17786b;padding:12px 18px;background:#edf7f4}.value-article h2{font-size:26px;line-height:1.5;margin:42px 0 16px}.value-article h3{font-size:19px;line-height:1.4}.value-article p{margin:0 0 18px}.value-article a{color:#185a91;text-underline-offset:4px}.value-article a:focus-visible,.value-article button:focus-visible,.value-article input:focus-visible{outline:3px solid #d89112;outline-offset:4px}.period{padding:14px 18px;border:1px solid #bdd5dc;background:#f1f7fb;margin-bottom:25px;font-size:14px}.period p{margin:0}.period.is-ended{background:#fff3de;border-color:#dfc18a}.value-article figure{margin:28px 0}.value-article figure img{display:block;width:100%;height:auto;border:1px solid #d0dee8;border-radius:6px}.value-article figcaption{font-size:14px;line-height:1.7;color:#5d6e80;margin-top:10px}.formula{background:#f3f7fb;border:1px solid #d1dfe9;padding:22px;margin:22px 0}.formula p:last-child{margin:0}.table-scroll{overflow:auto;margin:24px 0;border:1px solid #cbd9e5;border-radius:5px}.value-article table{width:100%;border-collapse:collapse;font-size:15px;min-width:600px}.value-article caption{text-align:left;padding:15px;background:#e8f1f7;font-weight:700}.value-article th,.value-article td{padding:14px;text-align:left;border-top:1px solid #d6e2eb;vertical-align:top}.value-article thead{background:#f4f8fb}.calculator{background:#edf5fa;border:1px solid #bed3e3;padding:28px;margin:35px 0;border-radius:8px}.calculator h2{margin-top:0}.calculator label{font-weight:700;display:block}.amount-row{display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap}.amount-row span{font-size:21px}.amount-row input{min-width:0;flex:1;padding:12px;font-size:22px;border:1px solid #839eaf;border-radius:4px;background:white;color:#233448;width:160px}.amount-row button{background:#175b85;color:white;padding:13px 20px;border:1px solid #175b85;border-radius:4px;font-size:16px;cursor:pointer}.calculator .category-choice{font-size:15px;font-weight:400;margin:18px 0;line-height:1.7}.category-choice input{width:18px;height:18px;vertical-align:middle;margin-right:8px}.small{font-size:13px;color:#5a7184;margin-top:10px!important}.error{color:#a22820;font-size:15px}.error:empty{display:none}.result-heading{font-weight:700;margin-top:22px!important}.result-line{background:#fff;padding:12px 15px;border-left:3px solid #9bbccc;font-size:15px}.result-summary{font-size:14px;color:#285745}.offer-rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:16px}.rule{border:1px solid #cedce6;padding:20px;border-radius:5px}.rule h3{margin:0 0 15px}.rule p{font-size:15px}.rule code{overflow-wrap:anywhere}.conditions{padding-left:22px}.conditions li{margin:12px 0}.article-actions{display:flex;flex-wrap:wrap;gap:18px;margin:25px 0;font-size:15px}.official-link{font-weight:700}.conclusion{border-top:2px solid #17786b;padding-top:24px;font-size:23px;margin-top:35px!important}.value-article [hidden]{display:none!important}
+  #value-results :global(.result-heading){font-weight:700;margin-top:22px}#value-results :global(.result-line){background:#fff;padding:12px 15px;border-left:3px solid #9bbccc;font-size:15px}#value-results :global(.result-summary){font-size:14px;color:#285745}
+  @media(max-width:600px){.value-article{font-size:16px}.opening{font-size:19px}.value-article h2{font-size:23px}.calculator{padding:20px}.amount-row button{width:100%}.formula{padding:17px}.value-article table{font-size:14px}.conclusion{font-size:21px}}
+</style>

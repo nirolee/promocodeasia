@@ -4,13 +4,15 @@ import '../styles/global.css';
 export interface Props {
   title: string;
   description: string;
+  image?: string;
+  imageAlt?: string;
   canonical?: string;
   /** 空壳页（既没码也没活动）传 true：输出 noindex,follow，不参与排名但仍传递内链。 */
   noindex?: boolean;
   /** 面包屑（首頁 → 品牌），有就输出 BreadcrumbList */
   breadcrumb?: { name: string; url: string }[];
 }
-const { title, description, canonical, noindex = false, breadcrumb } = Astro.props;
+const { title, description, image, imageAlt, canonical, noindex = false, breadcrumb } = Astro.props;
 const SITE = 'https://promocodeasia.com';
 const url = canonical ?? new URL(Astro.url.pathname, SITE).toString();
 // 结构化数据。Google 对优惠码没有富摘要，这里只放 WebSite + Breadcrumb——零成本、不撒谎。
@@ -38,7 +40,10 @@ if (breadcrumb && breadcrumb.length) {
   <meta property="og:title" content={title} />
   <meta property="og:description" content={description} />
   <meta property="og:url" content={url} />
-  <meta name="twitter:card" content="summary" />
+  {image && <meta property="og:image" content={new URL(image, SITE).toString()} />}
+  {image && imageAlt && <meta property="og:image:alt" content={imageAlt} />}
+  <meta name="twitter:card" content={image ? 'summary_large_image' : 'summary'} />
+  {image && <meta name="twitter:image" content={new URL(image, SITE).toString()} />}
   {/* Admitad(Mitgo) 流量源归属验证 —— ad space「PromoCodeAsia」，验证通过后可删 */}
   <meta name="mitgo-verification" content="33ce24bc-5535-45e0-b513-dd54919d4863" />
 
