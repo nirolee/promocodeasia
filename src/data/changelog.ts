@@ -25,6 +25,14 @@ export type Change = {
 
 export const CHANGES: Change[] = [
   {
+    date: '2026-10-29',
+    summary: '修正 Klook 中信 LINE Pay 點數回饋口徑，補齊 JCB 十月碼期限與卡別限制。',
+    details: [
+      'CTBCLP26102 為含一般消費 1% 的最高 10% LINE POINTS 回饋，不是結帳 9 折；補上每筆上限、訂購與使用期限，提示銀行與 Klook 次數說明衝突。',
+      'KJCB2610 限指定國內玩樂商品及台灣發行合資格 JCB 卡，10/31 到期；十一月碼僅列入換月準備，未提前列作可用碼。依官方條款核對，未付款實測。',
+    ],
+  },
+  {
     date: '2026-10-23',
     summary: '新增 Airalo、GigSky、QEEQ、Tiqets 四家優惠入口，分清公開碼、免費試用、領券與自動特價。',
     details: [
