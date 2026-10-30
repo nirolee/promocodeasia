@@ -1,11 +1,12 @@
 ---
 import Base from '../layouts/Base.astro';
 import { BRANDS } from '../data/brands';
-import { liveCodes, liveCampaigns, todayTW, hasSubstance } from '../lib/codes';
+import { liveCodes, liveCampaigns, todayTW, hasSubstance, isStale, versionStale } from '../lib/codes';
 // 计数必须和品牌页用同一套过期口径，否则会出现「首頁說 7 組、點進去只剩 1 組」
 const today = todayTW();
 const live = new Map(BRANDS.map((b) => [b.slug, liveCodes(b, today)]));
 const withCodes = BRANDS.filter((b) => live.get(b.slug)!.length > 0);
+const reviewCounts = new Map(BRANDS.map((brand) => [brand.slug, live.get(brand.slug)!.filter((code) => isStale(code, today) || versionStale(code, today)).length]));
 const allDates = BRANDS.flatMap((b) => live.get(b.slug)!.map((c) => c.verifiedAt)).sort();
 const latest = allDates.at(-1);
 const initials = (s: string) => s.replace(/[^A-Za-z]/g, '').slice(0, 2).toUpperCase() || s.slice(0, 1);
@@ -16,12 +17,12 @@ const initials = (s: string) => s.replace(/[^A-Za-z]/g, '').slice(0, 2).toUpperC
   <h1>優惠碼，只放我們核對過的</h1>
   <p class="lede">
     收錄 {BRANDS.length} 個品牌{latest ? `・最後一次核對 ${latest}` : ''}。
-    其中 {withCodes.length} 個目前有可用的公開碼。
+    其中 {withCodes.length} 個列有未過期公開碼；是否仍有名額及能否套用，請看各組限制與結帳結果。
   </p>
 
   <div class="trust">
     <strong>為什麼要再做一個優惠碼站</strong>
-    <p>優惠碼幾乎都有到期日，而且銀行合作碼多半每月換一次。問題是大多數整理頁只在頁首寫一個「最後更新」，<b>不告訴你每一組碼各自是什麼時候、從哪裡核對的</b>——排在搜尋結果最前面的那篇，自己標的更新日期是 2026-08-03。</p>
+    <p>頁首的「最後更新」不能代表每一組碼都在當天重查過。這裡把<b>各組最後核對日期、官方出處和適用限制分開列</b>，讓你先判斷資格，再前往品牌使用；條款核對不是付款實測。</p>
     <p>所以這裡只有兩條規則：<b>每組碼都標明何時核對、從哪一頁核對</b>；<b>過了官方標示的失效日就自動下架，查不到有效碼就直說沒有</b>。</p>
   </div>
 
@@ -72,7 +73,7 @@ const initials = (s: string) => s.replace(/[^A-Za-z]/g, '').slice(0, 2).toUpperC
         </div>
         <div class="foot">
           {live.get(b.slug)!.length > 0
-            ? <span class="pill pill-ok">✓ {live.get(b.slug)!.length} 組已核對</span>
+            ? <span class={reviewCounts.get(b.slug)! > 0 ? 'pill pill-warn' : 'pill pill-ok'}>{live.get(b.slug)!.length} 組未過期紀錄{reviewCounts.get(b.slug)! > 0 ? `・${reviewCounts.get(b.slug)} 組待複核` : '・各組附核對日期'}</span>
             : <span class="pill pill-none">目前沒有公開碼</span>}
           {liveCampaigns(b, today).length > 0 && <span class="pill pill-warn">{liveCampaigns(b, today).length} 檔活動進行中</span>}
         </div>
