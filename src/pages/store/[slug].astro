@@ -1,5 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
+import KkdayOrderPicker from '../../components/KkdayOrderPicker.astro';
+import { kkdayPickerOffers } from '../../lib/kkday-order-picker';
 import { BRANDS } from '../../data/brands';
 import { liveCodes, soldOutCodes, liveCampaigns, expiredCodes, isStale, daysSince, daysUntil, todayTW, weekdayTW, groupByCard, hasSubstance, versionEnd, versionStale, versionLabel, STALE_AFTER_DAYS } from '../../lib/codes';
 export function getStaticPaths() {
@@ -9,6 +11,7 @@ const { brand } = Astro.props;
 const today = todayTW();
 // 过期的码不进 HTML。空态里要说明「上一组什么时候失效的」，所以另外留一份。
 const codes = liveCodes(brand, today);
+const pickerOffers = brand.slug === 'kkday' ? kkdayPickerOffers(codes, today) : [];
 const soldOut = soldOutCodes(brand, today);
 const campaigns = liveCampaigns(brand, today);
 const dropped = expiredCodes(brand, today);
@@ -91,6 +94,8 @@ const showCardIndex = cardGroups.length >= 8;
       ? <span class="pill pill-ok">✓ 最後核對 {latest}</span>
       : <span class="pill pill-none">尚無已核對的公開碼</span>}
   </p>
+
+  {pickerOffers.length > 0 && <KkdayOrderPicker offers={pickerOffers} />}
 
   {weekdayCodes.length > 0 && (
     <div class="today" id="today-box">
